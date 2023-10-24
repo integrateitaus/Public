@@ -13,7 +13,13 @@
 ##########################
 #AgentDownloadURL is the VSA Agent download link for the client - Unique per client & location
 
-$AgentDownloadURL = Read-Host "Enter the VSA Agent download URL"
+
+[CmdletBinding()]
+param (
+    [Parameter(Mandatory=$true)]
+    [string]$AgentDownloadURL
+)
+
 $path = "C:\temp"
 
 ##########################
