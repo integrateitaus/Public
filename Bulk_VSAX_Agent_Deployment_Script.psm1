@@ -1,7 +1,7 @@
 #!ps
 <#
 
-# Bulk_VSAX_Agent_Deployment_Script.psm1
+# Bulk_VSAX_Agent_Deployment_Script.ps1
 #
 # Created 24/10/2023 by Phillip Anderson
 # IntegrateIT Australia
@@ -22,10 +22,11 @@ param (
 
 $path = "C:\temp"
 
+
 ##########################
 
 #Check if the C:\temp directory exists
-function CreateDirectory($path) {
+function CreateDirectory() {
     if (!(Test-Path -PathType Container $path)) {
         Write-Output "Creating $path directory"
         New-Item -ItemType Directory -Path $path
@@ -33,7 +34,7 @@ function CreateDirectory($path) {
     
 }
     
-function DownloadAndInstallAgent($AgentDownloadURL, $path) {
+function DownloadAndInstallAgent($AgentDownloadURL) {
     #Download the client specific VSA Agent
     Write-Output "Downloading VSA-x Agent"
     Invoke-WebRequest -Uri $AgentDownloadURL -OutFile "C:\temp\VSAX_x64.msi"
@@ -59,7 +60,7 @@ function DownloadAndInstallAgent($AgentDownloadURL, $path) {
 }
     
 function RemoveDesktopIcon() {
-    $Files = Get-ChildItem C:\Users\* -Filter "VSA X Manager.lnk" -Recurse -ErrorAction SilentlyContinue -Force
+    $Files = Get-ChildItem -Path "C:\Users\*" -Filter "VSA X Manager.lnk" -Recurse -ErrorAction SilentlyContinue -Force
     
     # Remove each found shortcut.
     Foreach ($File in $Files) {
@@ -70,8 +71,11 @@ function RemoveDesktopIcon() {
     Write-Output "Policy: Computers: Remove VSA X Manager Desktop Icon: Completed"
 }
     
-function DeployVSAXAgent($AgentDownloadURL, $path) {
-    CreateDirectory $path
-    DownloadAndInstallAgent $AgentDownloadURL $path
+function DeployVSAXAgent($AgentDownloadURL) {
+    CreateDirectory
+    DownloadAndInstallAgent $AgentDownloadURL
     RemoveDesktopIcon
 }
+
+
+#Export-ModuleMember -Function DeployVSAXAgent
