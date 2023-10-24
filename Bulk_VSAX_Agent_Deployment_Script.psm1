@@ -69,5 +69,3 @@ function DeployVSAXAgent($AgentDownloadURL, $path) {
     DownloadAndInstallAgent $AgentDownloadURL $path
     RemoveDesktopIcon
 }
-
-Export-ModuleMember -Function DeployVSAXAgent
