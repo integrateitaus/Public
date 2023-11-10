@@ -3,7 +3,30 @@
 
 
 #[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-Expression(New-Object Net.WebClient).DownloadString('\\SSPDC02\Support\DeployApps.psm1'); Install-Chrome -Wait
-<#Todo:
+<#
+How to execute
+    $appsToInstall = @(
+    # Call the function
+    #Install-Adobe
+    #Install-Zoom
+    #Install-Edge
+    #Install-Zoom
+   Install-Firefox
+        )
+
+$Servers = @(
+    Server1
+    Server2
+)
+
+    foreach ($app in $appsToInstall) {
+        $installCommand = "Install-$app"
+        Invoke-Command -ComputerName SSPRDS06 -ScriptBlock {
+            Invoke-Expression(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/integrateitaus/Public/main/DeployApps.psm1'); $app
+        }
+    }
+
+
 #>
 ###########################################
 
@@ -208,8 +231,4 @@ function Install-Adobe {
 }
 
 
-#Install-Chrome -Wait
-Install-Adobe -Wait
-Install-Teams -Wait
-Install-Firefox -Wait
-Install-Zoom -Wait
+
