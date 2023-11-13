@@ -10,8 +10,9 @@ How to execute
     #Install-Adobe
     #Install-Zoom
     #Install-Edge
-    #Install-Zoom
-   Install-Firefox
+    #Install-Teams
+   #Install-Firefox
+   #Install-FSLogix
         )
 
 $Servers = @(
@@ -21,8 +22,8 @@ $Servers = @(
 
     foreach ($app in $appsToInstall) {
         $installCommand = "Install-$app"
-        Invoke-Command -ComputerName SSPRDS06 -ScriptBlock {
-            Invoke-Expression(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/integrateitaus/Public/main/DeployApps.psm1'); $app
+        Invoke-Command -ComputerName $Server -ScriptBlock {
+            Invoke-Expression(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/integrateitaus/Public/main/DeployApps.psm1'); $installCommand
         }
     }
 
@@ -230,5 +231,45 @@ function Install-Adobe {
     }
 }
 
+# Install FSLogix for all users
+$fslogix_zip_url = "https://aka.ms/fslogix_download"
+$fslogix_zip = "$WorkingDir\FSLogix.zip"
+$fslogix_extracted_folder = "C:\Support\fslogix"
+$fslogix_exe = "$fslogix_extracted_folder\x64\Release\FSLogixAppsSetup.exe"
+$fslogix_log = "$WorkingDir\FSlogix\fslogix.txt"
+
+function Install-FSLogix {
+    # Download FSLogix
+    try { 
+        Write-Output "Downloading FSLogix Installer"
+        Start-BitsTransfer -Source $fslogix_zip_url -Destination $fslogix_zip
+    } catch {
+        Write-Output "Error Downloading FSLogix: $_"
+        Add-Content -Path $LogPath -Value "Error Downloading FSLogix: $_"
+    } 
+
+    # Extract FSLogix
+    try { 
+        Write-Output "Extracting FSLogix"
+        Expand-Archive -Path $fslogix_zip -DestinationPath "$WorkingDir" -Force
+    } catch {
+        Write-Output "Error Extracting FSLogix: $_"
+        Add-Content -Path $LogPath -Value "Error Extracting FSLogix: $_"
+    } 
+
+    # Install FSLogix
+    try { 
+        Change user /install
+        Write-Output "Installing FSLogix"
+        Start-Process $fslogix_exe -ArgumentList "/install", "/quiet", "/norestart", "/log", $fslogix_log -Wait
+        Write-Output "FSLogix installed successfully"
+        Add-Content -Path $LogPath -Value "FSLogix installed successfully: $_"
+    } catch {
+        Write-Output "Error installing FSLogix: $_"
+        Add-Content -Path $LogPath -Value "Error installing FSLogix: $_"
+    } finally {
+        Change user /execute
+    }
+}
 
 
