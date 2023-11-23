@@ -89,7 +89,6 @@ function MoveMYOBShortcut {
     if (-not (Test-Path -Path $myobFolder -PathType Container)) {
         Write-Output "$myobFolder doesn't exist. Exiting script."
        Write-Log -Message "$myobFolder folder doesn't exist on the desktop. Exiting script."
-        exit
     }
 
     # Step 2: Move shortcuts to the MYOB folder
@@ -142,8 +141,7 @@ function InstallMYOB {
             Write-Log -Message "Re-enabling execute mode"
             cmd.exe /c "Change user /execute"
         }
-    }
-    Else {
+    }     Else {
         Write-Output "MYOB Installer not found, exiting installation"
         Write-Log -Message "MYOB Installer not found, exiting installation"
     }
