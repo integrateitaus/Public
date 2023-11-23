@@ -1,38 +1,26 @@
 
-#Variables
-
-
-#[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-Expression(New-Object Net.WebClient).DownloadString('\\SSPDC02\Support\DeployApps.psm1'); Install-Chrome -Wait
 <#
-How to execute
-    $appsToInstall = @(
-    # Call the function
-    #Install-Adobe
-    #Install-Zoom
-    #Install-Edge
-    #Install-Teams
-   #Install-Firefox
-   #Install-FSLogix
-        )
+Applications to install:
+Install-Chrome -Wait
+Install-Adobe -Wait
+Install-Teams -Wait
+Install-Firefox -Wait
+Install-Zoom -Wait
+Install-FSLogix -wait
+Install-Bluebeam
+#>
 
-$Servers = @(
-    Server1
-    Server2
-)
+###########################################
+#one liner to run from powershell
+#Invoke-Expression(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/integrateitaus/Public/main/DeployApps.psm1'); & $using:Install-Bluebeam
+#Invoke-Expression(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/integrateitaus/Public/main/DeployApps.psm1'); Install-Bluebeam
 
-    foreach ($app in $appsToInstall) {
-        $installCommand = "Install-$app"
-        Invoke-Command -ComputerName $Server -ScriptBlock {
-            Invoke-Expression(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/integrateitaus/Public/main/DeployApps.psm1'); $installCommand
-        }
-    }
-
-
+<#Todo:
+22.11.2023: Test bluebeam installer
 #>
 ###########################################
 
 $WorkingDir = "C:\Support\"
-$SourceDir = "\\SSPDC02\Support"
 $ErrorActionPreference = "Stop"
 
 $LogPath = "$WorkingDir\$env:computername-AppInstall.log"
@@ -55,6 +43,7 @@ $LogPath = "$WorkingDir\$env:computername-AppInstall.log"
 
 Set-ErrorLogDestination
 #>
+
 #Enable RDS Install Mode
 #Change User /Install
 
@@ -198,40 +187,6 @@ function Install-Firefox {
     
 }
 
-
-################
-
-# Install Adobe Acrobat Reader DC for all users
-
-$adobe_url = "https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/2300620360/AcroRdrDC2300620360_en_US.exe"
-$adobe_exe = "$WorkingDir\AcroRdrDC_en_US.exe"
-function Install-Adobe {
-  #  Set-ErrorLogDestination
-    #Download Adobe Acrobat Reader DC
-    try { 
-        Write-Output "Downloading Adobe Acrobat Reader DC Installer"
-        Start-BitsTransfer -Source  $adobe_url -Destination $adobe_exe
-    } catch {
-        Write-Output "Error Downloading Adobe Acrobat Reader DC: $_"
-        Add-Content -Path $LogPath -Value "Error Downloading Adobe Acrobat Reader DC: $_"
-    } 
-
-    #Install Adobe Acrobat Reader DC
-    try { 
-     Change user /install
-        Write-Output "Installing Adobe Acrobat Reader DC"
-        Start-Process -FilePath $adobe_exe -ArgumentList "/sAll", "/rs", "/l", "en_US", "/msi", "/norestart", "EULA_ACCEPT=YES", "SUPPRESS_APP_LAUNCH=YES", "SUPPRESS_APP_RESTART=YES", "ALLUSERS=1" -Wait
-        Write-Output "Adobe Acrobat Reader DC installed successfully"
-        Add-Content -Path $LogPath -Value "Adobe Acrobat Reader DC installed successfully: $_"
-    } catch {
-        Write-Output "Error installing Adobe Acrobat Reader DC: $_"
-        Add-Content -Path $LogPath -Value "Error installing Adobe Acrobat Reader DC: $_"
-    } finally {
-       Change user /execute
-    }
-}
-
-
 # Install FSLogix for all users
 $fslogix_zip_url = "https://aka.ms/fslogix_download"
 $fslogix_zip = "$WorkingDir\FSLogix.zip"
@@ -272,5 +227,83 @@ function Install-FSLogix {
         Change user /execute
     }
 }
+
+
+################
+
+# Install Adobe Acrobat Reader DC for all users
+
+$adobe_url = "https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/2300620360/AcroRdrDC2300620360_en_US.exe"
+$adobe_exe = "$WorkingDir\AcroRdrDC_en_US.exe"
+function Install-Adobe {
+  #  Set-ErrorLogDestination
+    #Download Adobe Acrobat Reader DC
+    try { 
+        Write-Output "Downloading Adobe Acrobat Reader DC Installer"
+        Start-BitsTransfer -Source  $adobe_url -Destination $adobe_exe
+    } catch {
+        Write-Output "Error Downloading Adobe Acrobat Reader DC: $_"
+        Add-Content -Path $LogPath -Value "Error Downloading Adobe Acrobat Reader DC: $_"
+    } 
+
+    #Install Adobe Acrobat Reader DC
+    try { 
+     Change user /install
+        Write-Output "Installing Adobe Acrobat Reader DC"
+        Start-Process -FilePath $adobe_exe -ArgumentList "/sAll", "/rs", "/l", "en_US", "/msi", "/norestart", "EULA_ACCEPT=YES", "SUPPRESS_APP_LAUNCH=YES", "SUPPRESS_APP_RESTART=YES", "ALLUSERS=1" -Wait
+        Write-Output "Adobe Acrobat Reader DC installed successfully"
+        Add-Content -Path $LogPath -Value "Adobe Acrobat Reader DC installed successfully: $_"
+    } catch {
+        Write-Output "Error installing Adobe Acrobat Reader DC: $_"
+        Add-Content -Path $LogPath -Value "Error installing Adobe Acrobat Reader DC: $_"
+    } finally {
+       Change user /execute
+    }
+}
+
+# Install Bluebeam version 20.3.20 for all users
+
+$Bluebeam_zip_url = "https://downloads.bluebeam.com/software/downloads/20.3.20/MSIBluebeamRevu20.3.20x64.zip"
+$Bluebeam_zip = "$WorkingDir\MSIBluebeamRevu20.3.20x64.zip"
+$Bluebeam_extracted_folder = "C:\Support\MSIBluebeamRevu20*"
+$Bluebeam_msi = "$Bluebeam_extracted_folder\Bluebeam Revu x64 20.msi"
+
+
+function Install-Bluebeam {
+    # Download Bluebeam
+    try { 
+        Write-Output "Downloading Bluebeam Installer"
+        Start-BitsTransfer -Source $Bluebeam_zip_url -Destination $Bluebeam_zip
+    } catch {
+        Write-Output "Error Downloading Bluebeam: $_"
+        Add-Content -Path $LogPath -Value "Error Downloading Bluebeam: $_"
+    } 
+
+    # Extract Bluebeam
+    try { 
+        Write-Output "Extracting Bluebeam"
+        Expand-Archive -Path $Bluebeam_zip -DestinationPath "$Bluebeam_extracted_folder" -Force
+    } catch {
+        Write-Output "Error Extracting Bluebeam: $_"
+        Add-Content -Path $LogPath -Value "Error Extracting Bluebeam: $_"
+    } 
+
+    # Install Bluebeam
+    try { 
+        Change user /install
+        Write-Output "Installing Bluebeam"
+        Start-Process msiexec.exe -Wait -ArgumentList "/i $Bluebeam_msi /qn" -Wait
+        Write-Output "Bluebeam installed successfully"
+        Add-Content -Path $LogPath -Value "Bluebeam installed successfully: $_"
+    } catch {
+        Write-Output "Error installing Bluebeam: $_"
+        Add-Content -Path $LogPath -Value "Error installing Bluebeam: $_"
+    } finally {
+        Change user /execute
+    }
+}
+
+
+
 
 
