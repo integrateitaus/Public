@@ -38,6 +38,3 @@ if ($installed) {
 }
 
 
-
-cmd /c SSCERuntime_x64-ENU.exe /i /x:C:\support /q
-
