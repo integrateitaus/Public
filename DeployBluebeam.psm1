@@ -46,7 +46,7 @@ function Install-Bluebeam {
     Add-Content -Path $LogPath -Value "Returned latest Bluebeam Version: $version"
 
     # Install Bluebeam
-    $installed = Get-WmiObject -Query "SELECT * FROM Win32_Product WHERE (Name LIKE 'Bluebeam%')" | Where-Object { $_.Version -ge $version }
+    $installed = Get-WmiObject -Query "SELECT * FROM Win32_Product WHERE (Name LIKE 'Bluebeam Revu%')" | Where-Object { $_.Version -ge $version }
     if (!$installed) {
 
         # Variables
@@ -95,7 +95,7 @@ function Install-Bluebeam {
 
             Start-Process msiexec.exe -ArgumentList "/i `"$Bluebeam_msi`" BB_SERIALNUMBER=$serial BB_PRODUCTKEY=$product /qn" -Wait
                         
-            $installed = Get-WmiObject -Query "SELECT * FROM Win32_Product WHERE (Name LIKE 'Bluebeam%')" | Where-Object { $_.Version -ge $version }
+            $installed = Get-WmiObject -Query "SELECT * FROM Win32_Product WHERE (Name LIKE 'Bluebeam Revu%'')" | Where-Object { $_.Version -ge $version }
             if ($installed) {
                 Write-Output "Bluebeam installed successfully"
                 Add-Content -Path $LogPath -Value "Bluebeam installed successfully: $_"
@@ -116,7 +116,7 @@ function Install-Bluebeam {
 
                     Write-Output "Second attempt at Installing Bluebeam"
                     Start-Process msiexec.exe -ArgumentList "/i `"$Bluebeam_msi`" BB_SERIALNUMBER=$serial BB_PRODUCTKEY=$product /qn" -Wait Start-Process msiexec.exe -ArgumentList "/i `"$Bluebeam_msi`" BB_SERIALNUMBER=$serial BB_PRODUCTKEY=$product /qn" -Wait
-                    $installed = Get-WmiObject -Query "SELECT * FROM Win32_Product WHERE (Name LIKE 'Bluebeam%')" | Where-Object { $_.Version -ge $version }
+                    $installed = Get-WmiObject -Query "SELECT * FROM Win32_Product WHERE (Name LIKE 'Bluebeam Revu%'')" | Where-Object { $_.Version -ge $version }
                     if ($installed) {
                         Write-Output "Bluebeam installed successfully on second attempt."
                         Add-Content -Path $LogPath -Value "Bluebeam installed successfully on second attempt: $_"
