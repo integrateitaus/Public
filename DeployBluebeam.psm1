@@ -28,6 +28,29 @@ function Get-LatestVersion {
     return $newString
 }
 
+function Get-InstalledVersion {
+    # Define the registry paths for both 32-bit and 64-bit applications
+    $registryPaths = @(
+        'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*',
+        'HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*'
+    )
+
+    # Loop through each registry path
+    foreach ($path in $registryPaths) {
+        # Get the item properties
+        $items = Get-ItemProperty -Path $path
+
+        # Loop through each item
+        foreach ($item in $items) {
+            # Check if the DisplayName matches the software you're looking for
+            if ($item.DisplayName -like "Bluebeam Revu*") {
+                # Output the DisplayName and DisplayVersion
+                return $item.DisplayVersion
+            }
+        }
+    }
+}
+
 # Install Bluebeam version 20.3.20 for all users
 function Install-Bluebeam {
     Param
@@ -46,7 +69,7 @@ function Install-Bluebeam {
     Add-Content -Path $LogPath -Value "Returned latest Bluebeam Version: $version"
 
     # Install Bluebeam
-    $installed = Get-WmiObject -Query "SELECT * FROM Win32_Product WHERE (Name LIKE 'Bluebeam Revu%')" | Where-Object { $_.Version -ge $version }
+    $installed = Get-InstalledVersion #Get-WmiObject -Query "SELECT * FROM Win32_Product WHERE (Name LIKE 'Bluebeam Revu%')" | Where-Object { $_.Version -ge $version }
     if (!$installed) {
 
         # Variables
@@ -95,7 +118,7 @@ function Install-Bluebeam {
 
             Start-Process msiexec.exe -ArgumentList "/i `"$Bluebeam_msi`" BB_SERIALNUMBER=$serial BB_PRODUCTKEY=$product /qn" -Wait
                         
-            $installed = Get-WmiObject -Query "SELECT * FROM Win32_Product WHERE (Name LIKE 'Bluebeam Revu%'')" | Where-Object { $_.Version -ge $version }
+            $installed = Get-InstalledVersion
             if ($installed) {
                 Write-Output "Bluebeam installed successfully"
                 Add-Content -Path $LogPath -Value "Bluebeam installed successfully: $_"
@@ -116,7 +139,7 @@ function Install-Bluebeam {
 
                     Write-Output "Second attempt at Installing Bluebeam"
                     Start-Process msiexec.exe -ArgumentList "/i `"$Bluebeam_msi`" BB_SERIALNUMBER=$serial BB_PRODUCTKEY=$product /qn" -Wait Start-Process msiexec.exe -ArgumentList "/i `"$Bluebeam_msi`" BB_SERIALNUMBER=$serial BB_PRODUCTKEY=$product /qn" -Wait
-                    $installed = Get-WmiObject -Query "SELECT * FROM Win32_Product WHERE (Name LIKE 'Bluebeam Revu%'')" | Where-Object { $_.Version -ge $version }
+                    $installed = Get-InstalledVersion
                     if ($installed) {
                         Write-Output "Bluebeam installed successfully on second attempt."
                         Add-Content -Path $LogPath -Value "Bluebeam installed successfully on second attempt: $_"
