@@ -7,7 +7,7 @@ function Get-LatestVersion {
     $url = "https://www.bluebeam.com/download"
 
     # Download the webpage
-    $page = Invoke-WebRequest -Uri $url
+    $page = Invoke-WebRequest -Uri $url -UseBasicParsing
 
     # Regular expression pattern to match URLs
     $pattern = 'https://downloads.bluebeam.com/software/downloads/20\.[^"]*'
