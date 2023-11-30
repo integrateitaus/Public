@@ -76,7 +76,7 @@ try{
         Write-Log -Message "Failed to install $AppName : $_"
         exit
 }
-
+<#
         # Check if the application is installed
         $installed = Get-WmiObject -Class Win32_Product | Where-Object { $_.Name -eq $AppName }
 
@@ -88,7 +88,7 @@ try{
             Write-Log -Message "$AppName is not installed."
             exit
         }
-   
+   #>
         # Call the installation function
         InstallMYOB
     }
