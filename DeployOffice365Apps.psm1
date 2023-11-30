@@ -59,6 +59,8 @@ function InstallOfficeODT {
 
 
 function CreateOfficeConfigxml {
+   Write-Output "Creating Office Configuration XML"
+   Add-Content -Path "$LogPath" -Value "Creating Office Configuration XML"
     # Create an XML configuration file for the Office 365 installation
     try { 
 # Create an XML configuration file for the Office 365 installation
@@ -98,6 +100,7 @@ function CreateOfficeConfigxml {
 function InstallOffice365 {
     # Install Office 365 using the configuration file
     try {
+        write-output "Installing Office 365"
         Change user /install
         Start-Process -FilePath "$WorkingDir\ODT\setup.exe" -ArgumentList "/configure $WorkingDir\ODT\soe_configuration.xml" -Wait -ErrorAction Stop
         Write-Output "Office 365 installed successfully"
@@ -111,7 +114,7 @@ function InstallOffice365 {
 
 }
 
-function removeOffice365setupfiles {
+function removeOffice365odt {
     
     # Remove the Office Deployment Tool and configuration file
     try {
@@ -125,6 +128,7 @@ function removeOffice365setupfiles {
 }
 function DeployOffice365Apps {
     try {
+      
         InstallOfficeODT
         CreateOfficeConfigxml
         InstallOffice365
@@ -135,7 +139,7 @@ function DeployOffice365Apps {
     }
 }
 
-
+#DeployOffice365Apps
 
 
 
