@@ -83,7 +83,7 @@ try{
         InstallMYOB
     }
 }
-
+InstallSQLCompact
 
 # Function to get the download link
 function GetDownloadLink {
