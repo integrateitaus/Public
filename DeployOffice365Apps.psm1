@@ -115,7 +115,7 @@ function InstallOffice365 {
 }
 
 function removeOffice365odt {
-    
+   Write-output "Cleaning up"
     # Remove the Office Deployment Tool and configuration file
     try {
         Remove-Item -Path "$WorkingDir\Setup.exe" -ErrorAction Stop
