@@ -7,7 +7,6 @@ Install-Teams -Wait
 Install-Firefox -Wait
 Install-Zoom -Wait
 Install-FSLogix -wait
-Install-Bluebeam
 #>
 
 ###########################################
@@ -260,50 +259,5 @@ function Install-Adobe {
        Change user /execute
     }
 }
-
-# Install Bluebeam version 20.3.20 for all users
-
-$Bluebeam_zip_url = "https://downloads.bluebeam.com/software/downloads/20.3.20/MSIBluebeamRevu20.3.20x64.zip"
-$Bluebeam_zip = "$WorkingDir\MSIBluebeamRevu20.3.20x64.zip"
-$Bluebeam_extracted_folder = "C:\Support\MSIBluebeamRevu20*"
-$Bluebeam_msi = "$Bluebeam_extracted_folder\Bluebeam Revu x64 20.msi"
-
-
-function Install-Bluebeam {
-    # Download Bluebeam
-    try { 
-        Write-Output "Downloading Bluebeam Installer"
-        Start-BitsTransfer -Source $Bluebeam_zip_url -Destination $Bluebeam_zip
-    } catch {
-        Write-Output "Error Downloading Bluebeam: $_"
-        Add-Content -Path $LogPath -Value "Error Downloading Bluebeam: $_"
-    } 
-
-    # Extract Bluebeam
-    try { 
-        Write-Output "Extracting Bluebeam"
-        Expand-Archive -Path $Bluebeam_zip -DestinationPath "$Bluebeam_extracted_folder" -Force
-    } catch {
-        Write-Output "Error Extracting Bluebeam: $_"
-        Add-Content -Path $LogPath -Value "Error Extracting Bluebeam: $_"
-    } 
-
-    # Install Bluebeam
-    try { 
-        Change user /install
-        Write-Output "Installing Bluebeam"
-        Start-Process msiexec.exe -Wait -ArgumentList "/i $Bluebeam_msi /qn" -Wait
-        Write-Output "Bluebeam installed successfully"
-        Add-Content -Path $LogPath -Value "Bluebeam installed successfully: $_"
-    } catch {
-        Write-Output "Error installing Bluebeam: $_"
-        Add-Content -Path $LogPath -Value "Error installing Bluebeam: $_"
-    } finally {
-        Change user /execute
-    }
-}
-
-
-
 
 

@@ -28,31 +28,11 @@ $WorkingDir = "C:\Support"
 $ErrorActionPreference = "Stop"
 
 $LogPath = "$WorkingDir\$env:computername-365AppInstall.log"
-<#function Set-ErrorLogDestination {
-    $LocalErrorLog = "$WorkingDir\$env:computername-365AppInstall.log"
-    #$NetErrorLog = "$SourceDir\$env:computername-365AppInstall.log"
-
-    #Set logfile destination
-    if (Test-Path -Path $NetErrorLog) {
-        $LogPath = $NetErrorLog
-
-    } else {
-        $LogPath = $LocalErrorLog
-    }
-
-    if (-not (Test-Path -Path $WorkingDir -PathType Container)) {
-        New-Item -Path $WorkingDir -ItemType Directory
-    }
-}
-#>
-#Set-ErrorLogDestination
-
-
 
 function InstallOfficeODT {
 
     $odt_url = "https://www.microsoft.com/en-us/download/confirmation.aspx?id=49117"
-    $page = Invoke-WebRequest -Uri $odt_url
+    $page = Invoke-WebRequest -Uri $odt_url -UseBasicParsing
     $latest_version_url = $page.Links | Where-Object { $_.href -like "*officedeploymenttool*.exe" } | Select-Object -ExpandProperty href -First 1
 
     $ODT_selfextractor = "$WorkingDir\officedeploymenttool_*.exe"
@@ -111,7 +91,6 @@ function CreateOfficeConfigxml {
     } catch {
         Write-Host "Error: $_"
         Add-Content -Path "$LogPath" -Value "Error: $_"
-        exit 1
     }
 }
 
@@ -125,7 +104,6 @@ function InstallOffice365 {
     } catch {
         Write-Output "Error installing Office 365: $_"
         Add-Content -Path "$LogPath" -Value "Error installing Office 365: $_"
-        exit 1
     } finally {
     Change user /Execute
  
@@ -143,7 +121,6 @@ function removeOffice365setupfiles {
     } catch {
         Write-Output "Error removing Office Deployment Tool and configuration file: $_"
         Add-Content -Path "$LogPath" -Value "Error removing Office Deployment Tool and configuration file: $_"
-        exit 1
     }
 }
 function DeployOffice365Apps {
@@ -155,7 +132,6 @@ function DeployOffice365Apps {
     } catch {
         Write-Output "Error deploying Office 365 apps: $_"
         Add-Content -Path "$LogPath" -Value "Error deploying Office 365 apps: $_"
-        exit 1
     }
 }
 
