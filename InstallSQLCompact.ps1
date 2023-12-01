@@ -1,20 +1,35 @@
-$regPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
-$AppName = "Microsoft SQL Server Compact Edition 4.0 SP1 x64"
-$installed = Get-ItemProperty -Path $regPath | Where-Object { $_.DisplayName -eq $AppName }
+# Define the application name
+$appName = "Microsoft SQL Server Compact 4.0 SP1"
 
-if ($installed) {
-    Write-Host "Microsoft SQL Server Compact Edition 4.0 SP1 x64 is already installed."
-} else {
+function IsAppInstalled {
+    # Get the list of installed applications from the registry
+    $installedApps = Get-ChildItem 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall' | ForEach-Object { Get-ItemProperty $_.PsPath }
+
+    # Filter the list to find the application
+    $foundApp = $installedApps | Where-Object { $_.DisplayName -like "*$appName*" }
+
+    # Check if the application is installed
+    if ($foundApp) {
+        Write-Output "$appName is installed."
+    } else {
+        Write-Output "$appName is not installed."
+        Write-Output "Starting install process"
+    }
+}
         
     $downloadPath = "C:\Support\SSCERuntime_x64-ENU.exe"
 
     # Function to download MYOB Accountright
     function DownloadApp {
         # Get the download link    
+       
         $Downloadurl = "https://download.microsoft.com/download/F/F/D/FFDF76E3-9E55-41DA-A750-1798B971936C/ENU/SSCERuntime_x64-ENU.exe"
         
         try {
+           
             # Download the MSI file
+            write-host "Downloading $AppName..."
+            
             Start-BitsTransfer -Source $Downloadurl -Destination $downloadPath
             
             # Log the download success
