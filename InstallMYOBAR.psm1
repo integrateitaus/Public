@@ -52,8 +52,8 @@ function New-Log {
         Write-Output $Message
     }
 
-    # Export the Write-Log function
-    #Export-ModuleMember -Function Write-Log
+    #Export the Write-Log function
+    Export-ModuleMember -Function Write-Log
 }
 
 New-Log -LogPath "$logPath"
