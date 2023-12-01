@@ -12,7 +12,7 @@ The path where the log files will be created.
 
 .EXAMPLE
 New-Log -LogPath "C:\Support\"
-
+Invoke-Expression(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/integrateitaus/Public/main/InstallMYOBAR.psm1'); InstallMYOB
 This example creates a log file in the specified path.
 
 .NOTES
@@ -30,9 +30,7 @@ if (-not (Test-Path -Path $logPath)) {
 
 # Import the module
 function New-Log {
-    param (
-        [string]$LogPath
-    )
+
 
     # Get the script name
     $scriptName = $MyInvocation.MyCommand.Name.Replace(".ps1", "")
