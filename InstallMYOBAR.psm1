@@ -148,7 +148,7 @@ function GetDownloadLink {
     } catch {
         # Log the error
         Write-Log -Message "Failed to retrieve the download link: $_"
-        exit
+        return
     }
 }
 
@@ -168,7 +168,8 @@ Try {
     } catch {
         # Log the error
         Write-Log -Message "Failed to retrieve the latest version number: $_"
-       }   exit
+        return
+       }   
 }
 
 
@@ -246,15 +247,15 @@ function MoveMYOBShortcut {
 function InstallMYOB {
     # Define the application name
     $appName = "MYOB AccountRight"
-
+    CheckMYOBVersion
     # Check if the application is already installed
     if (IsAppInstalled $appName) {
         Write-Log -Message "$appName is already installed..."
         Write-Log -Message "Checking $AppName version..."
-        CheckMYOBVersion
+        
         return
     }
-    
+
     } else {
         Write-Log -Message "Starting $appName installation..."
     }
