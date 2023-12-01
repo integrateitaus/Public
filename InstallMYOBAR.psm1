@@ -89,14 +89,6 @@ function InstallSQLCompact {
         return
     }
 }
-    $scriptName = MYOBARUpdate$(Get-Date -Format "dd-MM-yyyy HH:mm:ss").ps1
-
-    # Create a log file
-    $logFile = Join-Path -Path $LogPath -ChildPath "$scriptName.txt"
-    if (-not (Test-Path -Path $logFile)) {
-        $null = New-Item -Path $logFile -ItemType File
-    }
-}
 
 
 
@@ -219,26 +211,28 @@ function CheckMYOBVersion {
     $OnlineVersion = GetOnlineVersion
     try {
         # Get the installed version of MYOB AccountRight
-        $installedVersion = (Get-WmiObject -Class Win32_Product | Where-Object { $_.Name -like "MYOB AccountRight*" }).Version
+        $installedVersion = (Get-WmiObject -Class Win32_Product | Where-Object { $_.Name -like "MYOB AccountRight* $OnlineVersion*" }).Version
 
         if ($installedVersion -eq $OnlineVersion) {
             Write-Log -Message "Installed version of MYOB AccountRight matches the online version. exiting script."
             exit
         } else {
             Write-Log -Message "Installed version of MYOB AccountRight does not match the online version."
-            InstallMYOB
+            
         }
     } catch {
         Write-Log -Message "Failed to check MYOB version: $_"
         
     }
-}
+} 
+
+
 
 
 function DownloadMYOBAccountright {
     # Get the download link
     $Downloadurl = GetDownloadLink
-
+    if (Test-Path $downloadPath) {
     try {
         # Download the MSI file
         Start-BitsTransfer -Source $Downloadurl -Destination $global:downloadPath
@@ -250,6 +244,10 @@ function DownloadMYOBAccountright {
         Write-Log -Message "Failed to download MYOB Accountright: $_"
         exit
     }
+} else {
+    Write-Log -Message "MYOB Accountright already downloaded"
+    
+}
 }
 
 function MoveMYOBShortcut {
@@ -284,22 +282,22 @@ function MoveMYOBShortcut {
     }
 }
 
-function InstallMYOB {
-    # Define the application name
-    $appName = "MYOB AccountRight"
-    CheckMYOBVersion
-    # Check if the application is already installed
-    if (IsAppInstalled $appName) {
-        Write-Log -Message "$appName is already installed..."
-        
-        return
 
+
+function InstallMYOB {
+    # Check if $Checkversion is different from the online version
+    if ($Checkversion -ne $OnlineVersion) {
+        Write-Log -Message "Continuing with installation process..."
+        # Rest of the installation code goes here
+        Write-Log -Message "Installation completed."
+        MoveMYOBShortcut
     } else {
-        Write-Log -Message "Starting $appName installation..."
+        Write-Log -Message "No need to install MYOB AccountRight. Versions match."
     }
 
-    # Check if the installer file exists
-    if (Test-Path $downloadPath) {
+        Write-Log -Message "$appName is not installed..."
+        Write-Log -Message "Starting install process"
+    
         try {
             Write-Log -Message "$appName Installer found, starting installation..."
             Write-Log -Message "Changing to Install Mode"
@@ -317,15 +315,11 @@ function InstallMYOB {
         } finally {
             Write-Log -Message "Re-enabling execute mode"
             cmd.exe /c "Change user /execute"
-        }
-    } else {
+        } else {
         DownloadMYOBAccountright
         Write-Log -Message "$downloadPath not found, Starting download"
         return
     }
 }
 
-InstallSQLCompact
-#DownloadMYOBAccountright
-#InstallMYOB
 
