@@ -29,31 +29,25 @@ if (-not (Test-Path -Path $logPath)) {
 }
 
 # Import the module
+function Write-Log {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$Message
+    )
+
+    $timestamp = Get-Date -Format "dd-MM-yyyy HH:mm:ss"
+    $logEntry = "$timestamp - $Message"
+    Add-Content -Path $logFile -Value $logEntry
+    Write-Output $Message
+}
+
 function New-Log {
-
-
     # Get the script name
     $scriptName = $MyInvocation.MyCommand.Name.Replace(".ps1", "")
 
     # Create a log file
     $logFile = Join-Path -Path $LogPath -ChildPath "$scriptName.txt"
     $null = New-Item -Path $logFile -ItemType File
-
-    # Write output to the log file and console
-    function Write-Log {
-        param (
-            [Parameter(Mandatory = $true)]
-            [string]$Message
-        )
-
-        $timestamp = Get-Date -Format "dd-MM-yyyy HH:mm:ss"
-        $logEntry = "$timestamp - $Message"
-        Add-Content -Path $logFile -Value $logEntry
-        Write-Output $Message
-    }
-
-    #Export the Write-Log function
-    Export-ModuleMember -Function Write-Log
 }
 
 New-Log -LogPath "$logPath"
