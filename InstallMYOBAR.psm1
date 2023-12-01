@@ -251,10 +251,8 @@ function InstallMYOB {
     # Check if the application is already installed
     if (IsAppInstalled $appName) {
         Write-Log -Message "$appName is already installed..."
-        Write-Log -Message "Checking $AppName version..."
         
         return
-    }
 
     } else {
         Write-Log -Message "Starting $appName installation..."
@@ -281,14 +279,13 @@ function InstallMYOB {
             cmd.exe /c "Change user /execute"
         }
     } else {
-        Write-Log -Message "$downloadPath not found, exiting installation"
+        DownloadMYOBAccountright
+        Write-Log -Message "$downloadPath not found, Starting download"
         return
     }
 }
 
-CheckMYOBVersion
-
 InstallSQLCompact
-DownloadMYOBAccountright
-InstallMYOB
+#DownloadMYOBAccountright
+#InstallMYOB
 
