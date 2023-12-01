@@ -36,37 +36,37 @@ function InstallSQLCompact {
     
 
     if ($installed) {
-        Write-Output "Microsoft SQL Server Compact Edition 4.0 SP1 x64 is already installed."
+        Write-Log -Message "Microsoft SQL Server Compact Edition 4.0 SP1 x64 is already installed."
         InstallMYOB
     } else {
-        Write-Output "$appname is not installed." |  Write-Log -Message "$appname is not installed."
-        Write-Output "Downloading $appname..."  | Write-Log -Message "Downloading $appname..."
+Write-Log -Message "$appname is not installed."
+Write-Log -Message "Downloading $appname..."
         
         try {
             # Download the exe file
             Start-BitsTransfer -Source $Downloadurl -Destination $downloadPath
             
             # Log the download success
-            Write-Log -Message "$AppName downloaded successfully" | write-output "$AppName downloaded successfully"
+            Write-Log -Message "$AppName downloaded successfully" 
         } catch {
             # Log the download failure
-            Write-Log -Message "Failed to download $AppName : $_" | Write-Output "Failed to download $AppName : $_"
+            Write-Log -Message "Failed to download $AppName : $_" 
             exit
         }
 
 try {
-        Write-Output "Extracting $AppName..."
+        Write-Log "Extracting $AppName..."
         cmd /c $downloadPath /i /x:C:\support /q
 } catch {
-        Write-Output "Failed to extract $AppName : $_" | Write-Log -Message "Failed to extract $AppName : $_"
+     Write-Log -Message "Failed to extract $AppName : $_"
         exit
 }
 try{
-        Write-Output "Installing $AppName..." | Write-Log -Message "Installing $AppName..."
+         Write-Log -Message "Installing $AppName..."
        
         Start-Process msiexec.exe -Wait -ArgumentList "/i $MSIPath /qn /norestart" 
 } catch {
-        Write-Output "Failed to install $AppName : $_" | Write-Log -Message "Failed to install $AppName : $_"
+      Write-Log -Message "Failed to install $AppName : $_"
         exit
 }
 
@@ -74,9 +74,9 @@ try{
         $installed = Get-WmiObject -Class Win32_Product | Where-Object { $_.Name -eq $AppName }
 
         if ($installed) {
-            Write-Output "$AppName has been installed." | Write-Log -Message "$AppName has been installed."
+        Write-Log -Message "$AppName has been installed."
         } else {
-            Write-Output "$AppName is not installed." | Write-Log -Message "$AppName is not installed."
+          Write-Log -Message "$AppName is not installed."
             exit
         }
    
@@ -103,20 +103,22 @@ function GetDownloadLink {
         
     } catch {
         # Log the error
-        Write-Log -Message "Failed to retrieve the download link: $_" | Write-Output "Failed to retrieve the download link: $_"
+        Write-Log -Message "Failed to retrieve the download link: $_" 
+        
     }
 }
 
 # Call the function
-GetDownloadLink
+
 $downloadPath = "c:\support\MYOB_AccountRight_Client.msi"
 
 
+$Downloadurl = GetDownloadLink
 
 # Function to download MYOB Accountright
 function DownloadMYOBAccountright {
     # Get the download link    
-    $Downloadurl = Get-DownloadLink
+    
     
     try {
         # Download the MSI file
@@ -124,11 +126,11 @@ function DownloadMYOBAccountright {
         Start-BitsTransfer -Source $Downloadurl -Destination $downloadPath
         
         # Log the download success
-        Write-Log -Message "MYOB Accountright downloaded successfully" | write-output "MYOB Accountright downloaded successfully"
+        Write-Log -Message "MYOB Accountright downloaded successfully" 
     } catch {
         # Log the download failure
-        Write-Log -Message "Failed to download MYOB Accountright: $_" | Write-Output "Failed to download MYOB Accountright: $_"
-        exit
+        Write-Log -Message "Failed to download MYOB Accountright: $_" 
+        
     }
 }
 DownloadMYOBAccountright
@@ -144,7 +146,7 @@ function MoveMYOBShortcut {
     $myobFolder = "C:\Users\Public\Desktop\MYOB"
 
     if (-not (Test-Path -Path $myobFolder -PathType Container)) {
-       Write-Log -Message "$myobFolder folder doesn't exist on the desktop. Exiting script." | Write-Output "$myobFolder folder doesn't exist on the desktop. Exiting script."
+       Write-Log -Message "$myobFolder folder doesn't exist on the desktop. Exiting script." 
         exit
     }
 
@@ -158,10 +160,10 @@ function MoveMYOBShortcut {
             $destinationPath = Join-Path -Path $myobFolder -ChildPath $shortcut.Name
             Move-Item -Path $shortcut.FullName -Destination $destinationPath -Force
             
-            Write-Log -Message "Moved shortcut $($shortcut.Name) to $($destinationPath)" | write-output "Moved shortcut $($shortcut.Name) to $($destinationPath)"
+            Write-Log -Message "Moved shortcut $($shortcut.Name) to $($destinationPath)" 
         }
     } else {
-                Write-Log -Message "No MYOB shortcuts found on the desktop." | Write-Output "No MYOB shortcuts found on the desktop."
+                Write-Log -Message "No MYOB shortcuts found on the desktop." 
     }
 }
        
@@ -173,29 +175,29 @@ function InstallMYOB {
     # Step 3: Install MYOB AccountRight
     If ((Test-Path "C:\support\MYOB_AccountRight_Client.msi") -eq $true) {
         try { 
-            Write-Log -Message "Changing to Install Mode" | Write-Output "Changing to Install Mode"
+            Write-Log -Message "Changing to Install Mode" 
             
             cmd.exe /c "Change user /install"
 
             #Write-Output "Installing MYOB AccountRight"
-            Write-Log -Message "Installing MYOB AccountRight"  | Write-Output "Installing MYOB AccountRight"
+            Write-Log -Message "Installing MYOB AccountRight"  
 
             #Install the VSA Agent
             Start-process msiexec.exe -Wait -ArgumentList "/i C:\support\MYOB_AccountRight_Client.msi /qn ALLUSERS=1"
-            Write-Log -Message "MYOB AccountRight installed successfully" | Write-Output "MYOB AccountRight installed successfully"
+            Write-Log -Message "MYOB AccountRight installed successfully" 
             MoveMYOBShortcut
         }
         catch {
-            Write-Log -Message "Error occurred during installation: $_" | Write-Output "Error occurred during installation: $_"
+            Write-Log -Message "Error occurred during installation: $_" 
             #exit
         }
         finally {
-            Write-Log -Message "Re-enabling execute mode" | Write-Output "Re-enabling execute mode"
+            Write-Log -Message "Re-enabling execute mode" 
             cmd.exe /c "Change user /execute"
         }
     }     Else {
         
-       Write-Log -Message "MYOB Installer not found, exiting installation" | Write-Output "MYOB Installer not found, exiting installation"
+       Write-Log -Message "MYOB Installer not found, exiting installation" 
        DownloadMYOBAccountright
     }
 }
