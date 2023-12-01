@@ -22,35 +22,83 @@ Version: 1.0
 #>
 # FILEPATH: InstallMYOBAR.ps1
 
-# Create the log directory if it doesn't exist
-$logPath = "C:\Support\"
-if (-not (Test-Path -Path $logPath)) {
-    $null = New-Item -Path $logPath -ItemType Directory
-}
-
 # Import the module
 function Write-Log {
     param (
-        [Parameter(Mandatory = $true)]
         [string]$Message
     )
 
-    $timestamp = Get-Date -Format "dd-MM-yyyy HH:mm:ss"
+    $timestamp = Get-Date -Format "dd-MM-yyyy"
+    $scriptName = "MYOBARUpdate-$Timestamp"
+    # Create a log file
+    $Logpath = "C:\Support"
+    $logFile = Join-Path -Path $LogPath -ChildPath "$scriptName.txt"
+    if (-not (Test-Path -Path $logFile)) {
+        $null = New-Item -Path $logFile -ItemType File
+    }
+    
     $logEntry = "$timestamp - $Message"
+
     Add-Content -Path $logFile -Value $logEntry
     Write-Output $Message
 }
 
-function New-Log {
-    # Get the script name
-    $scriptName = $MyInvocation.MyCommand.Name.Replace(".ps1", "")
+function IsAppInstalled {
+    param (
+        [string]$appName
+    )
+
+    # Get the list of installed applications from the registry
+    $installedApps = Get-ChildItem 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall' | ForEach-Object { Get-ItemProperty $_.PsPath }
+
+    # Filter the list to find the application
+    $foundApp = $installedApps | Where-Object { $_.DisplayName -like "*$appName*" }
+
+    # Check if the application is installed
+    if ($foundApp) {
+        Write-Log -Message "$appName is installed."
+    } else {
+        Write-Log -Message "$appName is not installed."
+        Write-Log -Message "Starting install process"
+    }
+}
+
+function InstallSQLCompact {
+    # Define the application name
+    $appName = "Microsoft SQL Server Compact 4.0 SP1"
+
+    # Check if the application is installed
+    IsAppInstalled $appName
+
+    if ($foundApp) {
+        Write-Log -Message "$appName is already installed."
+        return
+    }
+
+    try {
+        $Downloadurl = "https://download.microsoft.com/download/F/F/D/FFDF76E3-9E55-41DA-A750-1798B971936C/ENU/SSCERuntime_x64-ENU.exe"
+        $downloadPath = "C:\Support\SSCERuntime_x64-ENU.exe"
+        $MSIPath = "C:\support\SSCERuntime_x64-ENU.msi"
+
+        Write-Log -Message "Downloading $appName..."
+        # Download the exe file
+        Start-BitsTransfer -Source $Downloadurl -Destination $downloadPath
+    }
+    catch {
+        Write-Log -Message "Failed to download $appName."
+        return
+    }
+}
+    $scriptName = MYOBARUpdate$(Get-Date -Format "dd-MM-yyyy HH:mm:ss").ps1
 
     # Create a log file
     $logFile = Join-Path -Path $LogPath -ChildPath "$scriptName.txt"
-    $null = New-Item -Path $logFile -ItemType File
+    if (-not (Test-Path -Path $logFile)) {
+        $null = New-Item -Path $logFile -ItemType File
+    }
 }
 
-New-Log -LogPath "$logPath"
+
 
 function IsAppInstalled {
     param (
