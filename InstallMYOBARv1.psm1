@@ -28,15 +28,15 @@ function Write-Log {
 
 function InstallSQLCompact {
     $regPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
-    $AppName = "Microsoft SQL Server Compact Edition 4.0 SP1 x64"
-    $installed = Get-ItemProperty -Path $regPath | Where-Object { $_.DisplayName -eq $AppName }
+    $AppName = "Microsoft SQL Server Compact 4.0 SP1"
+    $installed = Get-ItemProperty -Path $regPath | Where-Object { $_.DisplayName -like $AppName }
     $Downloadurl = "https://download.microsoft.com/download/F/F/D/FFDF76E3-9E55-41DA-A750-1798B971936C/ENU/SSCERuntime_x64-ENU.exe"
     $downloadPath = "C:\Support\SSCERuntime_x64-ENU.exe"
     $MSIPath = "C:\support\SSCERuntime_x64-ENU.msi"
     
 
     if ($installed) {
-        Write-Log -Message "Microsoft SQL Server Compact Edition 4.0 SP1 x64 is already installed."
+        Write-Log -Message "$AppName is already installed."
         InstallMYOB
     } else {
 Write-Log -Message "$appname is not installed."
@@ -71,7 +71,7 @@ try{
 }
 
         # Check if the application is installed
-        $installed = Get-WmiObject -Class Win32_Product | Where-Object { $_.Name -eq $AppName }
+        $installed = Get-ItemProperty -Path $regPath | Where-Object { $_.DisplayName -like $AppName }
 
         if ($installed) {
         Write-Log -Message "$AppName has been installed."
@@ -110,15 +110,15 @@ function GetDownloadLink {
 
 # Call the function
 
-$downloadPath = "c:\support\MYOB_AccountRight_Client.msi"
 
-
-$Downloadurl = GetDownloadLink
 
 # Function to download MYOB Accountright
 function DownloadMYOBAccountright {
     # Get the download link    
-    
+    $downloadPath = "c:\support\MYOB_AccountRight_Client.msi"
+
+
+    $Downloadurl = GetDownloadLink  
     
     try {
         # Download the MSI file
@@ -133,7 +133,7 @@ function DownloadMYOBAccountright {
         
     }
 }
-DownloadMYOBAccountright
+
 
 # Function to move MYOB shortcuts
 function MoveMYOBShortcut {
