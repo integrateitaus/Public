@@ -51,7 +51,7 @@ Write-Log -Message "Downloading $appname..."
         } catch {
             # Log the download failure
             Write-Log -Message "Failed to download $AppName : $_" 
-            exit
+            return
         }
 
 try {
@@ -59,7 +59,7 @@ try {
         cmd /c $downloadPath /i /x:C:\support /q
 } catch {
      Write-Log -Message "Failed to extract $AppName : $_"
-        exit
+     return
 }
 try{
          Write-Log -Message "Installing $AppName..."
@@ -67,7 +67,7 @@ try{
         Start-Process msiexec.exe -Wait -ArgumentList "/i $MSIPath /qn /norestart" 
 } catch {
       Write-Log -Message "Failed to install $AppName : $_"
-        exit
+        return
 }
 
         # Check if the application is installed
@@ -172,7 +172,7 @@ function MoveMYOBShortcut {
 
 # Function to install MYOB AccountRight
 function InstallMYOB {
-    InstallSQLCompact
+    
     # Step 3: Install MYOB AccountRight
     If ((Test-Path "C:\support\MYOB_AccountRight_Client.msi") -eq $true) {
         try { 
@@ -197,9 +197,9 @@ function InstallMYOB {
             cmd.exe /c "Change user /execute"
         }
     }     Else {
-        
-       Write-Log -Message "MYOB Installer not found, exiting installation" 
-       DownloadMYOBAccountright
+        Write-Log -Message "MYOB Installer not found, starting download" 
+        DownloadMYOBAccountright      
+
     }
 }
 
