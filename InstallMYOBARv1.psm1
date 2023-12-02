@@ -172,6 +172,7 @@ function MoveMYOBShortcut {
 
 # Function to install MYOB AccountRight
 function InstallMYOB {
+    InstallSQLCompact
     # Step 3: Install MYOB AccountRight
     If ((Test-Path "C:\support\MYOB_AccountRight_Client.msi") -eq $true) {
         try { 
