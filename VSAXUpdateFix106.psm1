@@ -23,8 +23,9 @@ function ApplyVSAXFix {
         $process = Get-Process | Where-Object { $_.Path -eq $processPath }
         
         if ($process) {
-            Stop-Process -Id $process.Id
+            Stop-Process -Id $process.Id -Force
             Write-Output "Process stopped"
+            
         } else {
             Write-Output "Process not running"
         }
@@ -44,7 +45,7 @@ function ApplyVSAXFix {
 
     Write-Output "Starting the VSAX service"
     try {
-        Start-Process -FilePath "C:\Program Files\VSA X\PCMonitorSrv.exe"
+        #Start-Process -FilePath "C:\Program Files\VSA X\PCMonitorSrv.exe"
         Start-Service -Name "VSAX"
     } catch {
         Write-Output "Error starting the VSAX service: $_"
