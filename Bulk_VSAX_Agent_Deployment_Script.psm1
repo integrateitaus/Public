@@ -42,7 +42,7 @@ function DownloadAndInstallAgent($AgentDownloadURL) {
 
     # Wait for the file to download
     while (!(Test-Path "C:\temp\VSAX_x64.msi")) {
-        Start-Sleep -Seconds 30
+        Start-Sleep -Seconds 10
     }
 
     # Continue with the script
@@ -78,5 +78,4 @@ function DeployVSAXAgent($AgentDownloadURL) {
     RemoveDesktopIcon
 }
 
-
-#Export-ModuleMember -Function DeployVSAXAgent
+Exit
