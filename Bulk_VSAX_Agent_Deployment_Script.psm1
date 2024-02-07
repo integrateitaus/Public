@@ -12,7 +12,8 @@
 # Script Variables
 ##########################
 #AgentDownloadURL is the VSA Agent download link for the client - Unique per client & location
-
+#$AgentDownloadURL = ""
+#Invoke-Expression(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/integrateitaus/Public/main/Bulk_VSAX_Agent_Deployment_Script.psm1'); DeployVSAXAgent -AgentDownloadURL $AgentDownloadURL
 
 [CmdletBinding()]
 param (

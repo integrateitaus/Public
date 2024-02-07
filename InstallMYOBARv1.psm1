@@ -1,7 +1,7 @@
 # FILEPATH: script.ps1
 
 
-#Invoke-Expression(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/integrateitaus/Public/main/InstallMYOBAR.psm1'); InstallMYOB
+#Invoke-Expression(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/integrateitaus/Public/main/InstallMYOBARv1.psm1'); InstallMYOB
 # Create the log directory if it doesn't exist
 $logDirectory = "C:\Support"
 if (-not (Test-Path -Path $logDirectory)) {
