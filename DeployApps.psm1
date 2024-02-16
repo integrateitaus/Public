@@ -264,7 +264,7 @@ function Install-Adobe {
 
 function Install-EdgeEnt {
     # Install Microsoft Edge Enterprise
-    $edge_url = "https://go.microsoft.com/fwlink/?linkid=2108834"
+    $edge_url = "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/3a274bcd-d249-4afb-9c76-b19dc2016be2/MicrosoftEdgeEnterpriseX64.msi"
     $edge_msi = "$WorkingDir\MicrosoftEdgeEnterpriseX64.msi"
 
     try {
