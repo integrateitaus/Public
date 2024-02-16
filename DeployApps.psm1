@@ -261,3 +261,32 @@ function Install-Adobe {
 }
 
 
+function InstallEdgeEnt {
+    # Install Microsoft Edge Enterprise
+    $edge_url = "https://go.microsoft.com/fwlink/?linkid=2108834"
+    $edge_msi = "$WorkingDir\MicrosoftEdgeEnterpriseX64.msi"
+
+    try {
+        Write-Output "Downloading Microsoft Edge Enterprise Installer"
+        Start-BitsTransfer -Source $edge_url -Destination $edge_msi
+    } catch {
+        Write-Output "Error Downloading Microsoft Edge Enterprise: $_"
+        Add-Content -Path $LogPath -Value "Error Downloading Microsoft Edge Enterprise: $_"
+    }
+
+    try {
+        Change user /install
+        Write-Output "Installing Microsoft Edge Enterprise"
+        Start-Process msiexec.exe -Wait -ArgumentList "/i $edge_msi /qn /norestart ALLUSERS=1"
+        Write-Output "Microsoft Edge Enterprise installed successfully"
+        Add-Content -Path $LogPath -Value "Microsoft Edge Enterprise installed successfully: $_"
+    } catch {
+        Write-Output "Error installing Microsoft Edge Enterprise: $_"
+        Add-Content -Path $LogPath -Value "Error installing Microsoft Edge Enterprise: $_"
+    } finally {
+        Change user /execute
+    }
+}
+
+# Call the InstallEdgeEnt function
+InstallEdgeEnt
