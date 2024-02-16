@@ -273,6 +273,7 @@ function Install-EdgeEnt {
     } catch {
         Write-Output "Error Downloading Microsoft Edge Enterprise: $_"
         Add-Content -Path $LogPath -Value "Error Downloading Microsoft Edge Enterprise: $_"
+        exit
     }
 
     try {
