@@ -7,6 +7,7 @@ Install-Teams -Wait
 Install-Firefox -Wait
 Install-Zoom -Wait
 Install-FSLogix -wait
+Install-EdgeEnt
 #>
 
 ###########################################
@@ -261,7 +262,7 @@ function Install-Adobe {
 }
 
 
-function InstallEdgeEnt {
+function Install-EdgeEnt {
     # Install Microsoft Edge Enterprise
     $edge_url = "https://go.microsoft.com/fwlink/?linkid=2108834"
     $edge_msi = "$WorkingDir\MicrosoftEdgeEnterpriseX64.msi"
@@ -288,5 +289,3 @@ function InstallEdgeEnt {
     }
 }
 
-# Call the InstallEdgeEnt function
-InstallEdgeEnt
