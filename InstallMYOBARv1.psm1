@@ -191,7 +191,7 @@ function InstallMYOB {
         }
         catch {
             Write-Log -Message "Error occurred during installation: $_" 
-            #exit
+            exit
         }
         finally {
             Write-Log -Message "Re-enabling execute mode" 
