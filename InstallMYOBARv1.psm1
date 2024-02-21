@@ -100,6 +100,7 @@ function GetDownloadLink {
         # Print the download link
         $Url = $downloadLink.href
         Write-Output "$Url"
+        $MYOBARFilename = $Url -replace ".*msi/"
         
     } catch {
         # Log the error
@@ -115,7 +116,7 @@ function GetDownloadLink {
 # Function to download MYOB Accountright
 function DownloadMYOBAccountright {
     # Get the download link    
-    $downloadPath = "c:\support\MYOB_AccountRight_Client.msi"
+    $downloadPath = "c:\support\$MYOBARFilename"
 
 
     $Downloadurl = GetDownloadLink  
@@ -174,7 +175,7 @@ function MoveMYOBShortcut {
 function InstallMYOB {
     
     # Step 3: Install MYOB AccountRight
-    If ((Test-Path "C:\support\MYOB_AccountRight_Client.msi") -eq $true) {
+    If ((Test-Path "C:\support\$MYOBARFilename") -eq $true) {
         try { 
             Write-Log -Message "Changing to Install Mode" 
             
@@ -184,7 +185,7 @@ function InstallMYOB {
             Write-Log -Message "Installing MYOB AccountRight"  
 
             #Install the VSA Agent
-            Start-process msiexec.exe -Wait -ArgumentList "/i C:\support\MYOB_AccountRight_Client.msi /qn ALLUSERS=1"
+            Start-process msiexec.exe -Wait -ArgumentList "/i C:\support\$MYOBARFilename /qn ALLUSERS=1"
             Write-Log -Message "MYOB AccountRight installed successfully" 
             MoveMYOBShortcut
         }
