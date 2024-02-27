@@ -113,7 +113,8 @@ function DownloadMYOBAccountright {
         $Url = $downloadLink.href
         Write-Output "$Url"
         $MYOBARFilename = $Url -replace ".*msi/"
-        $downloadPath = Join-Path $Logdirectory $MYOBARFilename        
+        $downloadPath = Join-Path $Logdirectory $MYOBARFilename  
+        $downloadurl = $Url      
     } catch {
         # Log the error
         Write-Log -Message "Failed to retrieve the download link: $_" 
