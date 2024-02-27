@@ -114,7 +114,7 @@ function DownloadMYOBAccountright {
         Write-Output "$Url"
         $MYOBARFilename = $Url -replace ".*msi/"
         $downloadPath = Join-Path $Logdirectory $MYOBARFilename  
-        $downloadurl = $Url      
+         
     } catch {
         # Log the error
         Write-Log -Message "Failed to retrieve the download link: $_" 
@@ -131,7 +131,7 @@ function DownloadMYOBAccountright {
     try {
         # Download the MSI file
         
-        Start-BitsTransfer -Source $Downloadurl -Destination $downloadPath
+        Start-BitsTransfer -Source $Url -Destination $downloadPath
         
         # Log the download success
         Write-Log -Message "MYOB Accountright downloaded successfully" 
@@ -194,7 +194,6 @@ function InstallMYOB {
             try {
                 Write-Log -Message "Installing MYOB AccountRight"  
                 Start-process msiexec.exe -Wait -ArgumentList "/i C:\support\$MYOBARFilename /qn ALLUSERS=1"
-                Write-Log -Message "MYOB AccountRight installed successfully" 
                 MoveMYOBShortcut
                 
             }
@@ -206,7 +205,7 @@ function InstallMYOB {
                 Write-Log -Message "Re-enabling execute mode" 
                 cmd.exe /c "Change user /execute"
             }
-
+            Write-Log -Message "MYOB AccountRight installed successfully" 
         
     }     Else {
         Write-Log -Message "MYOB Installer not found, starting download" 
