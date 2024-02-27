@@ -86,11 +86,23 @@ try{
 }
 
 
-# Function to get the download link
-function GetDownloadLink {
-    $pageurl = "https://www.myob.com/au/support/downloads"
+
+
+
+
+# Call the function
+
+
+
+# Function to download MYOB Accountright
+function DownloadMYOBAccountright {
+    # Get the download link    
+    # Function to get the download link
+#function GetDownloadLink {
+    
     
     try {
+        $pageurl = "https://www.myob.com/au/support/downloads"
         # Download the HTML of the webpage
         $html = Invoke-WebRequest -Uri $pageurl -UseBasicParsing
         
@@ -101,25 +113,19 @@ function GetDownloadLink {
         $Url = $downloadLink.href
         Write-Output "$Url"
         $MYOBARFilename = $Url -replace ".*msi/"
-        
+        $downloadPath = Join-Path $Logdirectory $MYOBARFilename        
     } catch {
         # Log the error
         Write-Log -Message "Failed to retrieve the download link: $_" 
-        
+        Exit
     }
-}
+#}
 
-# Call the function
-
-
-
-# Function to download MYOB Accountright
-function DownloadMYOBAccountright {
-    # Get the download link    
-    $downloadPath = "c:\support\$MYOBARFilename"
+#    $Downloadurl = GetDownloadLink  
+ #   $downloadPath = "c:\support\$MYOBARFilename"
 
 
-    $Downloadurl = GetDownloadLink  
+    
     
     try {
         # Download the MSI file
@@ -131,7 +137,7 @@ function DownloadMYOBAccountright {
     } catch {
         # Log the download failure
         Write-Log -Message "Failed to download MYOB Accountright: $_" 
-        
+        Exit
     }
 }
 
@@ -176,30 +182,35 @@ function InstallMYOB {
     
     # Step 3: Install MYOB AccountRight
     If ((Test-Path "C:\support\$MYOBARFilename") -eq $true) {
-        try { 
             Write-Log -Message "Changing to Install Mode" 
             
             cmd.exe /c "Change user /install"
 
             #Write-Output "Installing MYOB AccountRight"
-            Write-Log -Message "Installing MYOB AccountRight"  
+            
 
-            #Install the VSA Agent
-            Start-process msiexec.exe -Wait -ArgumentList "/i C:\support\$MYOBARFilename /qn ALLUSERS=1"
-            Write-Log -Message "MYOB AccountRight installed successfully" 
-            MoveMYOBShortcut
-        }
-        catch {
-            Write-Log -Message "Error occurred during installation: $_" 
-            exit
-        }
-        finally {
-            Write-Log -Message "Re-enabling execute mode" 
-            cmd.exe /c "Change user /execute"
-        }
+            #Install MYOBAR 
+            try {
+                Write-Log -Message "Installing MYOB AccountRight"  
+                Start-process msiexec.exe -Wait -ArgumentList "/i C:\support\$MYOBARFilename /qn ALLUSERS=1"
+                Write-Log -Message "MYOB AccountRight installed successfully" 
+                MoveMYOBShortcut
+                
+            }
+            catch {
+                Write-Log -Message "Error occurred during installation: $_" 
+                exit
+            }
+            finally {
+                Write-Log -Message "Re-enabling execute mode" 
+                cmd.exe /c "Change user /execute"
+            }
+
+        
     }     Else {
         Write-Log -Message "MYOB Installer not found, starting download" 
-        DownloadMYOBAccountright      
+        DownloadMYOBAccountright
+        InstallMYOB      
 
     }
 }
