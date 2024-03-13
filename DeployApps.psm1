@@ -86,7 +86,7 @@ Set-ErrorLogDestination
 
 
 ######################################
-
+$WorkingDir = "C:\Support\"
 $teams_url = "https://teams.microsoft.com/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true"
 $teams_msi = "$WorkingDir\Teams_windows_x64.msi"
 
@@ -289,4 +289,3 @@ function Install-EdgeEnt {
         Change user /execute
     }
 }
-

@@ -180,7 +180,8 @@ function MoveMYOBShortcut {
 
 # Function to install MYOB AccountRight
 function InstallMYOB {
-    
+    InstallSQLCompact
+    DownloadMYOBAccountright
     # Step 3: Install MYOB AccountRight
     If ((Test-Path "C:\support\$MYOBARFilename") -eq $true) {
             Write-Log -Message "Changing to Install Mode" 
