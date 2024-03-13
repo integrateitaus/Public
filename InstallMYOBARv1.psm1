@@ -37,7 +37,7 @@ function InstallSQLCompact {
 
     if ($installed) {
         Write-Log -Message "$AppName is already installed."
-        InstallMYOB
+        DownloadMYOBAccountright
     } else {
 Write-Log -Message "$appname is not installed."
 Write-Log -Message "Downloading $appname..."
