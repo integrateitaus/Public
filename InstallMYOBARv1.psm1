@@ -53,7 +53,7 @@ Write-Log -Message "Downloading $appname..."
             Write-Log -Message "Failed to download $AppName : $_" 
             return
         }
-
+    
 try {
         Write-Log "Extracting $AppName..."
         cmd /c $downloadPath /i /x:C:\support /q
@@ -77,11 +77,11 @@ try{
         Write-Log -Message "$AppName has been installed."
         } else {
           Write-Log -Message "$AppName is not installed."
-            exit
+            return
         }
    
         # Call the installation function
-        InstallMYOB
+        DownloadMYOBAccountright
     }
 }
 
