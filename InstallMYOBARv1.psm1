@@ -101,7 +101,7 @@ function DownloadMYOBAccountright {
 #function GetDownloadLink {
     
     
-    try {
+   <# try {
         $pageurl = "https://www.myob.com/au/support/downloads"
                 # Download the HTML of the webpage
         $html = Invoke-WebRequest -Uri $pageurl -UseBasicParsing
@@ -116,6 +116,7 @@ function DownloadMYOBAccountright {
         $downloadPath = Join-Path $Logdirectory $MYOBARFilename  
          
     } catch {
+        #>
         # Log the error
         Write-Log -Message "Failed to retrieve the latest download link from download page: $_" 
         Write-Log -Message "attempting to download latest known version (manual version number) $MYOBManualVersion"
@@ -126,7 +127,9 @@ function DownloadMYOBAccountright {
         Write-Output "$downloadLink"
         $MYOBARFilename = $downloadLink -replace ".*msi/"
         $downloadPath = Join-Path $Logdirectory $MYOBARFilename  
-    }
+       
+
+   # }
 #}
 
 #    $Downloadurl = GetDownloadLink  
