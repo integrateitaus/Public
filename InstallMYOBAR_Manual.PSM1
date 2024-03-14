@@ -3,7 +3,8 @@
 #example usage
 # Assign the DownloadURL value
 $DownloadURL = "https://download.myob.com/arl/msi/MYOB_AccountRight_Client_2024.2.msi"
-
+$MYOBARFilename = $downloadURL -replace ".*msi/"
+$downloadPath = Join-Path $Logdirectory $MYOBARFilename  
 # Invoke the expression
 Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/integrateitaus/Public/main/InstallMYOBAR_Manual.psm1'); DownloadandInstallMYOBAR -DownloadURL $DownloadURL
 
@@ -45,8 +46,7 @@ function Write-Log {
 function DownloadandInstallMYOBAR($DownloadURL) {
     #Download the MYOB AR Client
     
-$MYOBARFilename = $downloadURL -replace ".*msi/"
-$downloadPath = Join-Path $Logdirectory $MYOBARFilename  
+
 
 Write-Log "Downloading $MYOBARFilenane from $DownloadURL to $downloadPath"
     Start-BitsTransfer -Source $DownloadURL -Destination $downloadPath
@@ -117,7 +117,7 @@ function InstallMYOB {
             
             cmd.exe /c "Change user /install"
 
-            #Write-Output "Installing MYOB AccountRight"
+            Write-Log "Installing MYOB AccountRight"
             
 
             #Install MYOBAR 
@@ -125,7 +125,7 @@ function InstallMYOB {
                 Write-Log -Message "Installing MYOB AccountRight"  
                 Start-process msiexec.exe -Wait -ArgumentList "/i C:\support\$MYOBARFilename /qn ALLUSERS=1"
                 MoveMYOBShortcut
-                
+                Write-Log -Message "MYOB AccountRight installed successfully"
             }
             catch {
                 Write-Log -Message "Error occurred during installation: $_" 
@@ -135,11 +135,10 @@ function InstallMYOB {
                 Write-Log -Message "Re-enabling execute mode" 
                 cmd.exe /c "Change user /execute"
             }
-            Write-Log -Message "MYOB AccountRight installed successfully" 
+             
         
     }     Else {
         Write-Log -Message "MYOB Installer not found, starting download" 
-        DownloadMYOB
-
+        return
     }
 }
