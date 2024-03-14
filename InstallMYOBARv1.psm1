@@ -103,7 +103,7 @@ function DownloadMYOBAccountright {
     
     try {
         $pageurl = "https://www.myob.com/au/support/downloads"
-        # Download the HTML of the webpage
+                # Download the HTML of the webpage
         $html = Invoke-WebRequest -Uri $pageurl -UseBasicParsing
         
         # Parse the HTML to find the download link
@@ -117,8 +117,15 @@ function DownloadMYOBAccountright {
          
     } catch {
         # Log the error
-        Write-Log -Message "Failed to retrieve the download link: $_" 
-        Exit
+        Write-Log -Message "Failed to retrieve the latest download link from download page: $_" 
+        Write-Log -Message "attempting to download latest known version (manual version number) $MYOBManualVersion"
+        
+        $downloadLink = "https://download.myob.com/arl/msi/MYOB_AccountRight_Client_2024.2.msi"
+        
+
+        Write-Output "$downloadLink"
+        $MYOBARFilename = $downloadLink -replace ".*msi/"
+        $downloadPath = Join-Path $Logdirectory $MYOBARFilename  
     }
 #}
 
@@ -180,7 +187,7 @@ function MoveMYOBShortcut {
 
 # Function to install MYOB AccountRight
 function InstallMYOB {
-    InstallSQLCompact
+    #InstallSQLCompact
     DownloadMYOBAccountright
     # Step 3: Install MYOB AccountRight
     If ((Test-Path "C:\support\$MYOBARFilename") -eq $true) {
