@@ -5,7 +5,7 @@
 $DownloadURL = "https://download.myob.com/arl/msi/MYOB_AccountRight_Client_2024.2.msi"
 
 # Invoke the expression
-Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/integrateitaus/Public/main/InstallMYOBARv1.psm1'); DownloadandInstallMYOBAR -DownloadURL $DownloadURL
+Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/integrateitaus/Public/main/InstallMYOBAR_Manual.psm1'); DownloadandInstallMYOBAR -DownloadURL $DownloadURL
 
 
 
