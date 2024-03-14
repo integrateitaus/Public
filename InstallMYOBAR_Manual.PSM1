@@ -45,7 +45,7 @@ function Write-Log {
 function DownloadandInstallMYOBAR($DownloadURL) {
     #Download the MYOB AR Client
     
-$MYOBARFilename = $downloadLink -replace ".*msi/"
+$MYOBARFilename = $downloadURL -replace ".*msi/"
 $downloadPath = Join-Path $Logdirectory $MYOBARFilename  
 
 Write-Log "Downloading $MYOBARFilenane from $DownloadURL to $downloadPath"
