@@ -2,11 +2,10 @@
 
 #example usage
 # Assign the DownloadURL value
-$DownloadURL = "https://download.myob.com/arl/msi/MYOB_AccountRight_Client_2024.2.msi"
-$MYOBARFilename = $downloadURL -replace ".*msi/"
-$downloadPath = Join-Path $Logdirectory $MYOBARFilename  
+#$DownloadURL = "https://download.myob.com/arl/msi/MYOB_AccountRight_Client_2024.2.msi"
+
 # Invoke the expression
-Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/integrateitaus/Public/main/InstallMYOBAR_Manual.psm1'); DownloadandInstallMYOBAR -DownloadURL $DownloadURL
+#Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/integrateitaus/Public/main/InstallMYOBAR_Manual.psm1'); DownloadandInstallMYOBAR -DownloadURL $DownloadURL
 
 
 
@@ -22,11 +21,13 @@ if (-not (Test-Path -Path $logDirectory)) {
 # Define the log file path
 $logFile = Join-Path -Path $logDirectory -ChildPath "$(Get-Date -Format 'dd.MM.yyyy.HH.mm.ss')-log.txt"
 
+$MYOBARFilename = $downloadURL -replace ".*msi/"
+$downloadPath = Join-Path $Logdirectory $MYOBARFilename  
 
 # Function to write log messages
 function Write-Log {
     param (
-       # [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [string]$Message
     )
     
