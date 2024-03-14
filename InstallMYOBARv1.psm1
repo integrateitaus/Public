@@ -121,7 +121,7 @@ function DownloadMYOBAccountright {
         Write-Log -Message "attempting to download latest known version (manual version number) $MYOBManualVersion"
         
         $downloadLink = "https://download.myob.com/arl/msi/MYOB_AccountRight_Client_2024.2.msi"
-        
+        $URL = $downloadLink
 
         Write-Output "$downloadLink"
         $MYOBARFilename = $downloadLink -replace ".*msi/"
