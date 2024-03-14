@@ -1,12 +1,11 @@
 
 
 #example usage
-#Invoke-Expression(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/integrateitaus/Public/main/InstallMYOBARv1.psm1'); DownloadandInstallMYOBAR -DownloadURL "https://download.myob.com/arl/msi/MYOB_AccountRight_Client_2024.2.msi"
-[CmdletBinding()]
-param (
-   # [Parameter(Mandatory=$true)]
-    [string]$DownloadURL
-)
+# Assign the DownloadURL value
+$DownloadURL = "https://download.myob.com/arl/msi/MYOB_AccountRight_Client_2024.2.msi"
+
+# Invoke the expression
+Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/integrateitaus/Public/main/InstallMYOBARv1.psm1'); DownloadandInstallMYOBAR -DownloadURL $DownloadURL
 
 
 
