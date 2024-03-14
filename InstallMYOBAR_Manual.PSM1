@@ -25,7 +25,7 @@ $logFile = Join-Path -Path $logDirectory -ChildPath "$(Get-Date -Format 'dd.MM.y
 # Function to write log messages
 function Write-Log {
     param (
-        [Parameter(Mandatory = $true)]
+       # [Parameter(Mandatory = $true)]
         [string]$Message
     )
     
