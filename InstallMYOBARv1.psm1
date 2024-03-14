@@ -120,14 +120,21 @@ function DownloadMYOBAccountright {
         # Log the error
         Write-Log -Message "Failed to retrieve the latest download link from download page: $_" 
         Write-Log -Message "attempting to download latest known version (manual version number) $MYOBManualVersion"
-        
+      try {
         $downloadLink = "https://download.myob.com/arl/msi/MYOB_AccountRight_Client_2024.2.msi"
         $URL = $downloadLink
 
-        Write-Output "$downloadLink"
+        Write-Log -Message "$downloadLink"
         $MYOBARFilename = $downloadLink -replace ".*msi/"
         $downloadPath = Join-Path $Logdirectory $MYOBARFilename  
-       
+        Start-BitsTransfer -Source $downloadLink -Destination $downloadPath
+
+      }
+      catch {
+        Write-Output  "Failed to download MYOB Accountright: $_" 
+        Write-Log -Message  "Failed to download MYOB Accountright: $_" 
+        Exit      }  
+
 
    # }
 #}
@@ -137,7 +144,7 @@ function DownloadMYOBAccountright {
 
 
     
-    
+    <#
     try {
         # Download the MSI file
         
@@ -150,6 +157,7 @@ function DownloadMYOBAccountright {
         Write-Log -Message "Failed to download MYOB Accountright: $_" 
         Exit
     }
+    #>
 }
 
 
