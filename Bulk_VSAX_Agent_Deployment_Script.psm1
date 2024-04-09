@@ -37,13 +37,17 @@ function CreateDirectory() {
     
 function DownloadAndInstallAgent($AgentDownloadURL) {
     #Download the client specific VSA Agent
-    Write-Output "Downloading VSA-x Agent"
-    Invoke-WebRequest -Uri $AgentDownloadURL -OutFile "C:\temp\VSAX_x64.msi"
-
-    # Wait for the file to download
-    while (!(Test-Path "C:\temp\VSAX_x64.msi")) {
-        Start-Sleep -Seconds 10
+    try {
+        Remove-Item "$path\VSAX_x64.msi" -ErrorAction SilentlyContinue
+        Write-Output "Downloading VSA-x Agent"
+        Start-BitsTransfer -Source $AgentDownloadURL -Destination "$path\VSAX_x64.msi"
+        Start-Sleep -Seconds 30 
     }
+    catch {
+write-output "Download Failed: $_"
+exit 1
+    }
+
 
     # Continue with the script
     Write-Output "Download finished. Installing now."
@@ -51,12 +55,19 @@ function DownloadAndInstallAgent($AgentDownloadURL) {
     
     #Install the VSA Agent
     If ((Test-Path "$path\VSAX_x64.msi") -eq $true) {
-            
-        Start-process msiexec.exe -Wait -ArgumentList "/i C:\temp\VSAX_x64.msi /qn"
-        Write-Output "Install Finished"
+            try {
+                Start-process msiexec.exe -Wait -ArgumentList "/i "$path\VSAX_x64.msi" /qn"
+                Write-Output "Install Finished"
+            }
+            catch {
+                Write-Output "Install Failed: $_"
+                exit 1
+            }
+
     }
     Else {
         Write-Output "Install Failed: File not found"
+        exit 1
     }
 }
     
@@ -78,4 +89,3 @@ function DeployVSAXAgent($AgentDownloadURL) {
     RemoveDesktopIcon
 }
 
-Exit
