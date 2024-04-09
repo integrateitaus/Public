@@ -80,7 +80,8 @@ function RemoveDesktopIcon() {
         Write-Output "Policy: Computers: Remove VSA X Manager Desktop Icon Removed: $File"
     }
     
-    Write-Output "Policy: Computers: Remove VSA X Manager Desktop Icon: Completed"
+    Write-Output "Policy: Computers: Remove VSA X Manager Desktop Icon: Completed" 
+    exit 0
 }
     
 function DeployVSAXAgent($AgentDownloadURL) {
