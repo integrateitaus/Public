@@ -9,6 +9,12 @@
 .PARAMETER Message
     The log message to be written to the log file.
 
+.PARAMETER Level
+    The level of the log message. Valid values are "INFO", "WARNING", and "ERROR". The default value is "INFO".
+
+.PARAMETER LogDirectory
+    The directory where the log file will be created. The default value is "C:\Support".
+
 .EXAMPLE
     Write-Log -Message "This is a sample log message"
 
