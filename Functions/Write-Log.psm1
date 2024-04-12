@@ -18,26 +18,7 @@
     Author: Phillip Anderson
     Date:   10/04/2024
 #>
-<#
-.SYNOPSIS
-    Creates a log file and writes log messages to it.
 
-.DESCRIPTION
-    This script creates a log directory if it doesn't exist and defines the log file path based on the current date and time. 
-    It also contains a function called Write-Log that takes a log message as input and writes it to the log file.
-
-.PARAMETER Message
-    The log message to be written to the log file.
-
-.EXAMPLE
-    Write-Log -Message "This is a sample log message"
-
-    This example demonstrates how to use the Write-Log function to write a log message to the log file.
-
-.NOTES
-    Author: Phillip Anderson
-    Date:   10/04/2024
-#>
 function Write-Log {
     param (
         [Parameter(Mandatory = $true)]
