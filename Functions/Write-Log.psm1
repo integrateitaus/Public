@@ -67,6 +67,6 @@ function Write-Log {
     }
 }
 
-Export-ModuleMember -Function Write-Log
+#Export-ModuleMember -Function Write-Log
 
  # End of Write-Log function
