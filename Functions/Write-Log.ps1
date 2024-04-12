@@ -42,4 +42,4 @@ function Write-Log {
     Write-Output $logMessage
 }
 
-. "$(Join-Path -Path 'https://raw.githubusercontent.com/integrateitaus/Powershell' -ChildPath 'Write-Log.ps1')"
+ # End of Write-Log function
