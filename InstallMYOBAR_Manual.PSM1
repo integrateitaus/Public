@@ -1,12 +1,25 @@
+<#
+.SYNOPSIS
+This script is used to download and install MYOB AccountRight Client.
 
+.DESCRIPTION
+The script downloads the MYOB AccountRight Client from a specified URL and installs it on the local machine. It also moves the MYOB shortcuts to a designated folder on the desktop.
 
-#example usage
+.PARAMETER DownloadURL
+The URL from which the MYOB AccountRight Client MSI file will be downloaded.
+
+.EXAMPLE
 # Assign the DownloadURL value
-#$DownloadURL = "https://download.myob.com/arl/msi/MYOB_AccountRight_Client_2024.2.msi"
+$DownloadURL = "https://download.myob.com/arl/msi/MYOB_AccountRight_Client_2024.2.msi"
 
 # Invoke the expression
-#Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/integrateitaus/Public/main/InstallMYOBAR_Manual.psm1'); DownloadandInstallMYOBAR -DownloadURL $DownloadURL
+Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/integrateitaus/Public/main/InstallMYOBAR_Manual.psm1'); DownloadandInstallMYOBAR -DownloadURL $DownloadURL
 
+.NOTES
+- This script requires administrative privileges to install the MYOB AccountRight Client.
+- The script creates a log file in the specified log directory to track the progress and status of the installation.
+- The MYOB shortcuts are moved to a folder named "MYOB" on the public desktop.
+#>
 
 
 # Create the log directory if it doesn't exist
