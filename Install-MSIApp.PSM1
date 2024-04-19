@@ -33,7 +33,7 @@ function Write-Log {
     Write-Output $logMessage
 }
 
-function DownloadMSI {
+function DownloadMSI ($DownloadURL){
     Write-Log "Downloading $MSIFileName from $DownloadURL to $downloadPath"
     Start-BitsTransfer -Source $DownloadURL -Destination $downloadPath
 
