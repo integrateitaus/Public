@@ -17,32 +17,16 @@ Install-EdgeEnt
 
 <#Todo:
 22.11.2023: Test bluebeam installer
-#>
+
 ###########################################
+#>
+Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/integrateitaus/Public/b5245c289179890600506f6fa9aff1ddf8ab0a27/Functions/Write-Log.psm1' -UseBasicParsing).Content
 
 $WorkingDir = "C:\Support\"
 $ErrorActionPreference = "Stop"
 
 $LogPath = "$WorkingDir\$env:computername-AppInstall.log"
-<#function Set-ErrorLogDestination {
-    $LocalErrorLog = "$WorkingDir\$env:computername-AppInstall.log"
-    $NetErrorLog = "$SourceDir\$env:computername-AppInstall.log"
 
-    #Set logfile destination
-    if (Test-Path -Path $NetErrorLog) {
-        $LogPath = $NetErrorLog
-        
-    } else {
-        $LogPath = $LocalErrorLog
-    }
-
-    if (-not (Test-Path -Path $WorkingDir -PathType Container)) {
-        New-Item -Path $WorkingDir -ItemType Directory
-    }
-}
-
-Set-ErrorLogDestination
-#>
 
 #Enable RDS Install Mode
 #Change User /Install
@@ -87,8 +71,7 @@ Set-ErrorLogDestination
 
 ######################################
 $WorkingDir = "C:\Support\"
-$teams_url = "https://teams.microsoft.com/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true"
-$teams_msi = "$WorkingDir\Teams_windows_x64.msi"
+
 
 
 function Install-Teams {
@@ -96,7 +79,9 @@ function Install-Teams {
     #Download Microsoft Teams
     try { 
         Write-Output "Downloading Microsoft Teams Installer"
-        Start-BitsTransfer -Source $teams_url -Destination $teams_msi
+        curl -o teamsbootstrapper.exe https://statics.teams.cdn.office.net/production-teamsprovision/lkg/teamsbootstrapper.exe
+        curl -o MSTeams-x64.msix https://statics.teams.cdn.office.net/production-windows-x64/enterprise/webview2/lkg/MSTeams-x64.msix
+        
         } catch {
                  Write-Output "Error Downloading Microsoft Teams Installer: $_"
                 }
@@ -105,9 +90,20 @@ function Install-Teams {
     #Install Microsoft Teams
     try { 
        Change user /install
+        
+        $sideloadAppsEnabled = Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowAllTrustedApps"
+        if ($sideloadAppsEnabled -eq 1) {
+            Write-Host "Windows Sideload apps feature is already enabled."
+        } else {
+            # Enable Windows Sideload apps feature
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowAllTrustedApps" -Value 1
+            Write-Host "Windows Sideload apps feature has been enabled."
+        }
+        
+        # Install the new version of MS Teams
         Write-Output "Installing Microsoft Teams"
-        Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$teams_msi`" /qn ALLUSERS=1" -Wait -NoNewWindow
-        #Start-Process "$teams_exe" -ArgumentList "/s" -Wait -ErrorAction Stop
+        Dism /Online /Add-ProvisionedAppxPackage /PackagePath:C:\temp\MSTeams-x64.msix /SkipLicense
+
         Write-Output "Microsoft Teams installed successfully"
         } catch {
                 Write-Output "Error installing Microsoft Teams: $_"
