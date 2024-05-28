@@ -83,4 +83,3 @@ function Uninstall-DellOEMApps {
     }
 }
 
-Uninstall-DellOEMApps
