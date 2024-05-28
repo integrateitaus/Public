@@ -37,5 +37,5 @@ function ChangeLicenseKey {
 }
 
 # Call the function with the new license key
-$NewLicenseKey = "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
-ChangeLicenseKey -NewLicenseKey $NewLicenseKey
+#$NewLicenseKey = "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+#ChangeLicenseKey -NewLicenseKey $NewLicenseKey
