@@ -188,7 +188,7 @@ $fslogix_zip_url = "https://aka.ms/fslogix_download"
 $fslogix_zip = "$WorkingDir\FSLogix.zip"
 $fslogix_extracted_folder = "C:\Support\FSLogix_Apps"
 $fslogix_exe = "$fslogix_extracted_folder\x64\Release\FSLogixAppsSetup.exe"
-$fslogix_log = "$WorkingDir\FSlogix\fslogix.txt"
+$fslogix_log = "$WorkingDir\fslogix.txt"
 
 function Install-FSLogix {
     # Download FSLogix
