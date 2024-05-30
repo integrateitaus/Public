@@ -10,7 +10,7 @@ The URL from which the MSI file will be downloaded.
 
 .EXAMPLE
 # Assign the DownloadURL value
-$DownloadURL = "https://download.myob.com/arl/msi/MYOB_AccountRight_Client_2024.2.msi"
+$DownloadURL = ""
 
 # Invoke the expression
 Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/integrateitaus/Public/main/Install-MSIApp.psm1'); DownloadMSI -DownloadURL $DownloadURL
@@ -22,6 +22,20 @@ Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.githubu
 
 Invoke-Expression (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/integrateitaus/Public/b5245c289179890600506f6fa9aff1ddf8ab0a27/Functions/Write-Log.psm1' -UseBasicParsing).Content
 #Invoke-Expression(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/integrateitaus/Public/b5245c289179890600506f6fa9aff1ddf8ab0a27/Functions/Write-Log.psm1')
+
+# Create the log directory if it doesn't exist
+$logDirectory = "C:\Support"
+if (-not (Test-Path -Path $logDirectory)) {
+    New-Item -ItemType Directory -Path $logDirectory | Out-Null
+}
+
+# Define the log file path
+$logFile = Join-Path -Path $logDirectory -ChildPath "$(Get-Date -Format 'dd.MM.yyyy.HH.mm.ss')-log.txt"
+
+$MSIFileName = $DownloadURL -replace ".*msi/"
+$downloadPath = Join-Path $logDirectory $MSIFileName
+
+
 
 function Write-Log {
     param (

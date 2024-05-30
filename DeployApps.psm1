@@ -202,8 +202,12 @@ function Install-FSLogix {
 
     # Extract FSLogix
     try { 
+        # Create FSLogix extracted folder if it doesn't exist
+        if (-not (Test-Path -Path $fslogix_extracted_folder)) {
+            New-Item -ItemType Directory -Path $fslogix_extracted_folder | Out-Null
+        }
         Write-Output "Extracting FSLogix"
-        Expand-Archive -Path $fslogix_zip -DestinationPath "$WorkingDir" -Force
+        Expand-Archive -Path $fslogix_zip -DestinationPath "$fslogix_extracted_folder" -Force
     } catch {
         Write-Output "Error Extracting FSLogix: $_"
         Add-Content -Path $LogPath -Value "Error Extracting FSLogix: $_"
