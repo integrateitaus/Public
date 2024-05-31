@@ -34,9 +34,6 @@ $LogPath = "$WorkingDir\$env:computername-AppInstall.log"
 ###########################################
 #Install Google Chrome
 
-
-
-
     $chrome_url = "https://dl.google.com/tag/s/appguid%3D%7B8A69D345-D564-463C-AFF1-A69D9E530F96%7D%26iid%3D%7B9F1E6C2C-6E2C-7D4D-9D2B-3D4D9C5A5E3D%7D%26lang%3Den%26browser%3D5%26usagestats%3D1%26appname%3DGoogle%2520Chrome%26needsadmin%3Dprefers%26ap%3Dx64-stable-statsdef_1%26brand%3DGCEA/dl/chrome/install/googlechromestandaloneenterprise64.msi"
     $chrome_msi = "$WorkingDir\googlechromestandaloneenterprise64.msi"
 
