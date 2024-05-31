@@ -72,41 +72,79 @@ $WorkingDir = "C:\Support\"
 
 
 function Install-Teams {
-   # Set-ErrorLogDestination
-    #Download Microsoft Teams
-    try { 
-        Write-Output "Downloading Microsoft Teams Installer"
-        curl -o teamsbootstrapper.exe https://statics.teams.cdn.office.net/production-teamsprovision/lkg/teamsbootstrapper.exe
-        curl -o MSTeams-x64.msix https://statics.teams.cdn.office.net/production-windows-x64/enterprise/webview2/lkg/MSTeams-x64.msix
-        
-        } catch {
-                 Write-Output "Error Downloading Microsoft Teams Installer: $_"
-                }
 
+    $sourceUrl = "https://statics.teams.cdn.office.net/production-windows-x64/enterprise/webview2/lkg/MSTeams-x64.msix"
+    $msixPath = "$WorkingDir\MSTeams-x64.msix"
 
-    #Install Microsoft Teams
-    try { 
-       Change user /install
-        
-        $sideloadAppsEnabled = Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowAllTrustedApps"
-        if ($sideloadAppsEnabled -eq 1) {
-            Write-Host "Windows Sideload apps feature is already enabled."
-        } else {
-            # Enable Windows Sideload apps feature
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowAllTrustedApps" -Value 1
-            Write-Host "Windows Sideload apps feature has been enabled."
+    # Check if the registry value exists and its data is 1
+    $RegistryPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock"
+    $RegistryValueName = "AllowAllTrustedApps"
+    $RegistryValueData = 1
+
+    if ((Get-ItemProperty -Path $RegistryPath -Name $RegistryValueName -ErrorAction SilentlyContinue) -and ((Get-ItemProperty -Path $RegistryPath -Name $RegistryValueName).$RegistryValueName -eq $RegistryValueData)) {
+        Write-Host "Windows Sideload apps feature is already enabled."
+    } else {
+        # Check if the registry path exists, and create any missing keys
+        if (-not (Test-Path -Path $RegistryPath -PathType Container)) {
+            New-Item -Path $RegistryPath -Force | Out-Null
         }
-        
-        # Install the new version of MS Teams
-        Write-Output "Installing Microsoft Teams"
-        Dism /Online /Add-ProvisionedAppxPackage /PackagePath:C:\temp\MSTeams-x64.msix /SkipLicense
 
-        Write-Output "Microsoft Teams installed successfully"
+        # Check if the DWORD registry value exists
+        if (-not (Test-Path -Path "$RegistryPath\$RegistryValueName")) {
+            Try {
+                # Create the new DWORD registry value
+                New-ItemProperty -Path $RegistryPath -Name $RegistryValueName -Value $RegistryValueData -PropertyType DWord | Out-Null
+                Write-Host "Windows Sideload apps feature has been enabled."
+            } Catch {
+                Write-Host "Failed to enable Windows Sideload apps feature."
+            }
+        } else {
+            Write-Host "Windows Sideload apps feature is enabled."
+        }
+    }
+
+
+
+    # Check if the MSIX file already exists
+    if (Test-Path $msixPath) {
+        # Get the size of the existing file
+        $existingSize = (Get-Item $msixPath).Length
+
+        # Get the size of the file from the source URL
+        $webRequest = [System.Net.WebRequest]::Create($sourceUrl)
+        $webResponse = $webRequest.GetResponse()
+        $sourceSize = $webResponse.ContentLength
+
+        # Compare the sizes
+        if ($existingSize -eq $sourceSize) {
+            Write-Host "$msixPath already exists and its size matches the source."
+        } else {
+            Write-Host "$msixPath already exists but its size does not match the source. Re-downloading..."
+            try {
+                Remove-Item $msixPath
+                write-host "Removed $msixPath"
+            } catch {
+                Write-Host "Failed to remove $msixPath."
+            }
+        }
+    } else {
+        try {
+            Write-Host "Downloading the Modern Teams MSIX file from $sourceUrl"
+            Start-BitsTransfer -Source $sourceUrl -Destination $msixPath
+            Write-Host "Download successful."
         } catch {
-                Write-Output "Error installing Microsoft Teams: $_"
-                } finally {
-                            Change user /Execute
-                        }
+            Write-Host "Failed to download the Modern Teams MSIX file."
+        }
+    }
+
+    # Install the new version of MS Teams
+    try {
+        Write-Log "Installing Modern Teams"
+        Dism /Online /Add-ProvisionedAppxPackage /PackagePath:$msixPath /SkipLicense
+    } catch {
+        Write-Host "Failed to add provisioned Appx package: $_"
+    }
+
 }
 
 
