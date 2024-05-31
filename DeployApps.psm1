@@ -146,7 +146,27 @@ function Install-Teams {
     } catch {
         Write-Host "Failed to add provisioned Appx package: $_"
     }
+    # Uninstall Classic Teams
+    function Uninstall-ClassicTeams {
+        $classicTeamsExe = "C:\Program Files (x86)\Teams Installer\Teams.exe"
+        if (Test-Path $classicTeamsExe) {
+            try {
+                Write-Output "Uninstalling Classic Teams"
+                Start-Process -FilePath $classicTeamsExe -ArgumentList "--uninstall", "--s"
+                Write-Output "Classic Teams uninstalled successfully"
+                Add-Content -Path $LogPath -Value "Classic Teams uninstalled successfully"
+            } catch {
+                Write-Output "Error uninstalling Classic Teams: $_"
+                Add-Content -Path $LogPath -Value "Error uninstalling Classic Teams: $_"
+            }
+        } else {
+            Write-Output "Classic Teams is not installed"
+            Add-Content -Path $LogPath -Value "Classic Teams is not installed"
+        }
+    }
 
+    # Call the Uninstall-ClassicTeams function
+    Uninstall-ClassicTeams
 }
 
 
