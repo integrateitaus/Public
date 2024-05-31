@@ -140,7 +140,9 @@ function Install-Teams {
     # Install the new version of MS Teams
     try {
         Write-Log "Installing Modern Teams"
+        Change user /install
         Dism /Online /Add-ProvisionedAppxPackage /PackagePath:$msixPath /SkipLicense
+        Change user /execute
     } catch {
         Write-Host "Failed to add provisioned Appx package: $_"
     }
