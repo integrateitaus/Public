@@ -40,21 +40,8 @@ function Install-FSLogix {
     }
 }
 
-function Get-InstalledFSLogixVersion {
-    try {
-        $fslogixRegistryPath = "HKLM:\SOFTWARE\FSLogix\Apps"
-        if (Test-Path -Path $fslogixRegistryPath) {
-            $installedVersion = (Get-ItemProperty -Path "HKLM:\SOFTWARE\FSLogix\Apps").InstallVersion   
-            $installedVersion
-        }
 
-    } catch {
-        $errorMessage = "Error getting installed FSLogix version: $_"
-        Write-Output $errorMessage
-        Add-Content -Path $LogPath -Value $errorMessage
 
-    }
-}
 function Invoke-FSLogixDownload {
 
     try { 
@@ -85,8 +72,21 @@ function Invoke-FSLogixDownload {
 }
 
 
-# Check if FSLogix is already installed
-$installedVersion = Get-InstalledFSLogixVersion
+
+try {
+    $fslogixRegistryPath = "HKLM:\SOFTWARE\FSLogix\Apps"
+    if (Test-Path -Path $fslogixRegistryPath) {
+        $installedVersion = (Get-ItemProperty -Path "HKLM:\SOFTWARE\FSLogix\Apps").InstallVersion   
+        $installedVersion
+    }
+
+} catch {
+    $errorMessage = "Error getting installed FSLogix version: $_"
+    Write-Output $errorMessage
+    Add-Content -Path $LogPath -Value $errorMessage
+
+}
+
 if ($installedVersion) {
     Write-Output "FSLogix is installed. Installed version: $installedVersion"
     if ($onlineVersion -gt $installedVersion) {
@@ -94,6 +94,7 @@ if ($installedVersion) {
         Invoke-FSLogixDownload -WorkingDir $WorkingDir -LogPath $LogPath
     } else {
         Write-Output "FSLogix is already up to date. Skipping installation."
+        Add-Content -Path $LogPath -Value $errorMessage
         exit 0
     }
 } else {
