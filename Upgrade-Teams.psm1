@@ -1,22 +1,51 @@
+<#
+.SYNOPSIS
+    Upgrades Microsoft Teams to the latest version.
 
-# Download the new version of MS Teams from the CDN
+.DESCRIPTION
+    This script checks if Microsoft Teams is already installed and if not, it installs the latest version of Microsoft Teams.
+    It also checks if the classic version of Teams is installed and uninstalls it if found.
+
+.PARAMETER None
+
+.EXAMPLE
+    Upgrade-Teams
+
+.NOTES
+    Author: 
+    Date: 12/06/2024
+#>
+
 Set-Location "C:\Temp"
 
-
-$TeamsClassic = Test-Path C:\Users\*\AppData\Local\Microsoft\Teams\current\Teams.exe
-$TeamsNew = Get-ChildItem "C:\Program Files\WindowsApps" -Filter "MSTeams_*"
+$isTeamsClassicInstalled = Test-Path C:\Users\*\AppData\Local\Microsoft\Teams\current\Teams.exe
+$isTeamsNewInstalled = Get-ChildItem "C:\Program Files\WindowsApps" -Filter "MSTeams_*"
 
 $sourceUrl = "https://statics.teams.cdn.office.net/production-windows-x64/enterprise/webview2/lkg/MSTeams-x64.msix"
 $msixPath = "C:\Temp\MSTeams-x64.msix"
 
 function Install-MSTeams {
+    <#
+    .SYNOPSIS
+        Installs the latest version of Microsoft Teams.
+
+    .DESCRIPTION
+        This function enables the Windows Sideload apps feature, downloads the MSIX file for the latest version of Microsoft Teams,
+        and installs it using the Dism command.
+
+    .PARAMETER None
+
+    .EXAMPLE
+        Install-MSTeams
+    #>
+
     # Check if the registry value exists and its data is 1
     $RegistryPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock"
     $RegistryValueName = "AllowAllTrustedApps"
     $RegistryValueData = 1
 
     if ((Get-ItemProperty -Path $RegistryPath -Name $RegistryValueName -ErrorAction SilentlyContinue) -and ((Get-ItemProperty -Path $RegistryPath -Name $RegistryValueName).$RegistryValueName -eq $RegistryValueData)) {
-        Write-Host "Windows Sideload apps feature is already enabled."
+        Write-Output "Windows Sideload apps feature is already enabled."
     } else {
         # Check if the registry path exists, and create any missing keys
         if (-not (Test-Path -Path $RegistryPath -PathType Container)) {
@@ -28,16 +57,14 @@ function Install-MSTeams {
             Try {
                 # Create the new DWORD registry value
                 New-ItemProperty -Path $RegistryPath -Name $RegistryValueName -Value $RegistryValueData -PropertyType DWord | Out-Null
-                Write-Host "Windows Sideload apps feature has been enabled."
+                Write-Output "Windows Sideload apps feature has been enabled."
             } Catch {
-                Write-Host "Failed to enable Windows Sideload apps feature."
+                Write-Output "Failed to enable Windows Sideload apps feature."
             }
         } else {
-            Write-Host "Windows Sideload apps feature is enabled."
+            Write-Output "Windows Sideload apps feature is enabled."
         }
     }
-
-
 
     # Check if the MSIX file already exists
     if (Test-Path $msixPath) {
@@ -51,109 +78,110 @@ function Install-MSTeams {
 
         # Compare the sizes
         if ($existingSize -eq $sourceSize) {
-            Write-Host "$msixPath already exists and its size matches the source."
+            Write-Output "$msixPath already exists and its size matches the source."
         } else {
-            Write-Host "$msixPath already exists but its size does not match the source. Re-downloading..."
+            Write-Output "$msixPath already exists but its size does not match the source. Re-downloading..."
             try {
-                Remove-Item $msixPath
-                write-host "Removed $msixPath"
+                Remove-Item $msixPath -ErrorAction SilentlyContinue
+                Write-Output "Removed $msixPath"
             } catch {
-                Write-Host "Failed to remove $msixPath."
+                Write-Output "Failed to remove $msixPath."
             }
         }
     } else {
         try {
-            Write-Host "Downloading the Modern Teams MSIX file from $sourceUrl"
+            Write-Output "Downloading the Modern Teams MSIX file from $sourceUrl"
             Start-BitsTransfer -Source $sourceUrl -Destination $msixPath
-            Write-Host "Download successful."
+            Write-Output "Download successful."
         } catch {
-            Write-Host "Failed to download the Modern Teams MSIX file."
+            Write-Output "Failed to download the Modern Teams MSIX file."
         }
     }
 
     # Install the new version of MS Teams
     try {
-        Write-Host "Installing Modern Teams"
+        Write-Output "Installing Modern Teams"
         Dism /Online /Add-ProvisionedAppxPackage /PackagePath:$msixPath /SkipLicense
     } catch {
-        Write-Host "Failed to add provisioned Appx package: $_"
+        Write-Output "Failed to add provisioned Appx package: $_"
     }
 }
 
-if($TeamsNew){
-    Write-Host "Modern Teams is already installed"  
+if ($isTeamsNewInstalled) {
+    Write-Output "Modern Teams is already installed"
     exit 0
 } else {
-    Write-Host "Modern Teams is not installed"
+    Write-Output "Modern Teams is not installed"
     try {
-        Install-MSTEAMS
+        Install-MSTeams
     } catch {
-        Write-Host "Failed to install Modern Teams"
+        Write-Output "Failed to install Modern Teams"
     }
 }
-
 
 # Check if Teams Classic is installed
+if ($isTeamsClassicInstalled) {
+    function Uninstall-TeamsClassic($TeamsPath) {
+        <#
+        .SYNOPSIS
+            Uninstalls the classic version of Microsoft Teams.
 
-if($TeamsClassic){
-function Uninstall-TeamsClassic($TeamsPath) {
-    try {
-        $process = Start-Process -FilePath "$TeamsPath\Update.exe" -ArgumentList "--uninstall /s" -PassThru -Wait -ErrorAction STOP
+        .DESCRIPTION
+            This function uninstalls the classic version of Microsoft Teams by running the Update.exe with the "--uninstall /s" argument.
 
-        if ($process.ExitCode -ne 0) {
-            Write-Error "Uninstallation failed with exit code $($process.ExitCode)."
+        .PARAMETER $TeamsPath
+            The path to the Teams installation directory.
+
+        .EXAMPLE
+            Uninstall-TeamsClassic "C:\Program Files (x86)\Microsoft\Teams"
+
+        #>
+
+        try {
+            $process = Start-Process -FilePath "$TeamsPath\Update.exe" -ArgumentList "--uninstall /s" -PassThru -Wait -ErrorAction SilentlyContinue
+
+            if ($process.ExitCode -ne 0) {
+                Write-Output "Uninstallation failed with exit code $($process.ExitCode)."
+            }
+        } catch {
+            Write-Output $_.Exception.Message
         }
-    } catch {
-        Write-Error $_.Exception.Message
     }
-}
 
-# Remove Teams Machine-Wide Installer
-Write-Host "Removing Teams Machine-wide Installer"
+    # Remove Teams Machine-Wide Installer
+    Write-Output "Removing Teams Machine-wide Installer"
 
-#Windows Uninstaller Registry Path
-$registryPath = "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*"
+    # Windows Uninstaller Registry Path
+    $registryPath = "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*"
 
-# Get all subkeys and match the subkey that contains "Teams Machine-Wide Installer" DisplayName.
-$MachineWide = Get-ItemProperty -Path $registryPath | Where-Object -Property DisplayName -eq "Teams Machine-Wide Installer"
+    # Get all subkeys and match the subkey that contains "Teams Machine-Wide Installer" DisplayName.
+    $MachineWide = Get-ItemProperty -Path $registryPath -ErrorAction SilentlyContinue | Where-Object -Property DisplayName -eq "Teams Machine-Wide Installer"
 
-if ($MachineWide) {
-    Start-Process -FilePath "msiexec.exe" -ArgumentList "/x ""$($MachineWide.PSChildName)"" /qn" -NoNewWindow -Wait
-} else {
-    Write-Host "Teams Machine-Wide Installer not found"
-}
-
-# Get all Users
-$AllUsers = Get-ChildItem -Path "$($ENV:SystemDrive)\Users"
-
-# Process all Users
-foreach ($User in $AllUsers) {
-    Write-Host "Processing user: $($User.Name)"
-
-    # Locate installation folder
-    $localAppData = "$($ENV:SystemDrive)\Users\$($User.Name)\AppData\Local\Microsoft\Teams"
-    $programData = "$($env:ProgramData)\$($User.Name)\Microsoft\Teams"
-
-    if (Test-Path "$localAppData\Current\Teams.exe") {
-        Write-Host "  Uninstall Teams for user $($User.Name)"
-        Uninstall-TeamsClassic -TeamsPath $localAppData
-    } elseif (Test-Path "$programData\Current\Teams.exe") {
-        Write-Host "  Uninstall Teams for user $($User.Name)"
-        Uninstall-TeamsClassic -TeamsPath $programData
+    if ($MachineWide) {
+        Start-Process -FilePath "msiexec.exe" -ArgumentList "/x ""$($MachineWide.PSChildName)"" /qn" -NoNewWindow -Wait -ErrorAction SilentlyContinue
     } else {
-        Write-Host "  Teams installation not found for user $($User.Name)"
+        Write-Output "Teams Machine-Wide Installer not found"
     }
-}
 
+    # Get all Users
+    $AllUsers = Get-ChildItem -Path "$($ENV:SystemDrive)\Users" -ErrorAction SilentlyContinue
 
+    # Process all Users
+    foreach ($User in $AllUsers) {
+        $programData = Join-Path $env:ProgramData $User.Name "Microsoft\Teams"
+        $localAppData = Join-Path $env:LocalAppData $User.Name "Microsoft\Teams"
 
-# Remove old Teams folders and icons
-$TeamsFolder_old = "$($ENV:SystemDrive)\Users\*\AppData\Local\Microsoft\Teams"
-$TeamsIcon_old = "$($ENV:SystemDrive)\Users\*\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Microsoft Teams*.lnk"
-Get-Item $TeamsFolder_old | Remove-Item -Force -Recurse
-Get-Item $TeamsIcon_old | Remove-Item -Force -Recurse
+        Uninstall-TeamsClassic $localAppData
+        Uninstall-TeamsClassic $programData
+    }
+
+    # Remove old Teams folders and icons
+    $TeamsFolder_old = Join-Path $ENV:SystemDrive "Users\*\AppData\Local\Microsoft\Teams"
+    $TeamsIcon_old = Join-Path $ENV:SystemDrive "Users\*\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Microsoft Teams*.lnk"
+
+    Get-Item -Path $TeamsFolder_old -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse
+    Get-Item -Path $TeamsIcon_old -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse
 
 } else {
-    Write-Host "Teams Classic is not installed"
+    Write-Output "Teams Classic is not installed"
 }
-
