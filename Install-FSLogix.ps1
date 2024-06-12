@@ -16,7 +16,22 @@
 #>
 
 $WorkingDir = "C:\Support"
+if (-not $WorkingDir) {
+    Write-Error "WorkingDir is not set."
+    return
+}
+
+if (-not $env:computername) {
+    Write-Error "Computer name is not set."
+    return
+}
+
 $LogPath = Join-Path $WorkingDir "$env:computername-FSLogixInstall.log"
+if (-not $LogPath) {
+    Write-Error "LogPath is not set."
+    return
+}
+
 $onlineVersion = "2.9.8884.27471"
 
 function Install-FSLogix {
@@ -100,4 +115,4 @@ function Invoke-FSLogixDownload {
     }
 }
 
-Install-FSLogix -WorkingDir $WorkingDir -LogPath $LogPath
+Install-FSLogix 
