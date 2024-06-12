@@ -28,11 +28,7 @@ if (-not $env:computername) {
     return
 }
 
-$LogPath = Join-Path $WorkingDir "FSLogixUpdate-Version-$onlineVersion.log"
-if (-not $LogPath) {
-    Write-Error "LogPath is not set."
-    return
-}
+$LogPath = "C:\Support\FSLogixUpdate-Version-$onlineVersion.log"
 
 
 
