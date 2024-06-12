@@ -101,9 +101,9 @@ function Invoke-FSLogixDownload {
     # Install FSLogix
     try { 
         Write-Output "Installing FSLogix"
-        Start-Process (Join-Path $WorkingDir "FSLogix_Apps\x64\Release\FSLogixAppsSetup.exe") -ArgumentList "/install", "/quiet", "/norestart", "/log", (Join-Path $WorkingDir "fslogix.txt") -Wait
-        $fslogixLogContent = Get-Content -Path (Join-Path $WorkingDir "fslogix.txt")
-        Add-Content -Path $LogPath -Value $fslogixLogContent
+        Start-Process (Join-Path $WorkingDir "FSLogix_Apps\x64\Release\FSLogixAppsSetup.exe") -ArgumentList "/install", "/quiet", "/norestart", "/log", (Join-Path $WorkingDir "fslogix.txt")
+        #$fslogixLogContent = Get-Content -Path (Join-Path $WorkingDir "fslogix.txt")
+        #Add-Content -Path $LogPath -Value $fslogixLogContent
         Write-Output "FSLogix installed successfully"
         Add-Content -Path $LogPath -Value "FSLogix installed successfully"
     } catch {
