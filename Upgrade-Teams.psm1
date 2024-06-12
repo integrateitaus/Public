@@ -168,8 +168,11 @@ if ($isTeamsClassicInstalled) {
 
     # Process all Users
     foreach ($User in $AllUsers) {
-        $programData = Join-Path $env:ProgramData $User.Name "Microsoft\Teams"
-        $localAppData = Join-Path $env:LocalAppData $User.Name "Microsoft\Teams"
+        $programData = Join-Path $env:ProgramData $User.Name 
+        $programData = Join-Path $programData "Microsoft\Teams"
+        
+        $localAppData = Join-Path $env:LocalAppData $User.Name 
+        $localAppData = Join-Path $localAppData "Microsoft\Teams"
 
         Uninstall-TeamsClassic $localAppData
         Uninstall-TeamsClassic $programData
@@ -178,7 +181,10 @@ if ($isTeamsClassicInstalled) {
     # Remove old Teams folders and icons
     $TeamsFolder_old = Join-Path $ENV:SystemDrive "Users\*\AppData\Local\Microsoft\Teams"
     $TeamsIcon_old = Join-Path $ENV:SystemDrive "Users\*\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Microsoft Teams*.lnk"
-
+    $TeamsShortcut_old = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Microsoft Teams.lnk"
+    $TeamsShortcut_PublicDesktop = "C:\Users\Public\Desktop\Microsoft Teams.lnk"
+    Get-Item -Path $TeamsShortcut_PublicDesktop -ErrorAction SilentlyContinue | Remove-Item -Force
+    Get-Item -Path $TeamsShortcut_old -ErrorAction SilentlyContinue | Remove-Item -Force
     Get-Item -Path $TeamsFolder_old -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse
     Get-Item -Path $TeamsIcon_old -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse
 
