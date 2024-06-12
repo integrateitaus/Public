@@ -109,7 +109,7 @@ function Install-MSTeams {
 
 if ($isTeamsNewInstalled) {
     Write-Output "Modern Teams is already installed"
-    exit 0
+    
 } else {
     Write-Output "Modern Teams is not installed"
     try {
