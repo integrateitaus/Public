@@ -106,7 +106,7 @@ if ($downloadAndInstall)
     Write-Host "Running $Installer /install /quiet /norestart"
     Start-Process $Installer -wait -ArgumentList "/install /quiet /norestart"
 
-    # Wait for 5 minutes so that the files can be deleted because despite -wait being specified, it doesn't actually wait for all processes to finish
+    <# # Wait for 5 minutes so that the files can be deleted because despite -wait being specified, it doesn't actually wait for all processes to finish
     Start-Sleep -Seconds 300
 
     # Close the zip file so it can be deleted
@@ -116,6 +116,7 @@ if ($downloadAndInstall)
     Write-Host "Cleaning up, deleting $Installer and $Zip."
     Remove-Item -Path $Installer -Force
     Remove-Item -Path $Zip -Force
+    #>
 } else {
     Write-Host "FSLogix already installed and up to date."
 
