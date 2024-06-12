@@ -19,22 +19,6 @@ $onlineVersion = "2.9.8884.27471"
 $WorkingDir = "C:\Support"
 $LogPath = "C:\Support\FSLogixUpdate-Version-$onlineVersion.log"
 
-# Check if FSLogix is already installed
-$installedVersion = Get-InstalledFSLogixVersion
-if ($installedVersion) {
-    Write-Output "FSLogix is installed. Installed version: $installedVersion"
-    if ($onlineVersion -gt $installedVersion) {
-        Write-Output "Online version of FSLogix is newer than the installed version. Downloading FSLogix Installer..."
-        Invoke-FSLogixDownload -WorkingDir $WorkingDir -LogPath $LogPath
-    } else {
-        Write-Output "FSLogix is already up to date. Skipping installation."
-        exit 0
-    }
-} else {
-    Write-Output "FSLogix is not installed. Downloading FSLogix Installer..."
-    Invoke-FSLogixDownload -WorkingDir $WorkingDir -LogPath $LogPath
-}
-
 
 function Install-FSLogix {
 
@@ -100,6 +84,22 @@ function Invoke-FSLogixDownload {
     } 
 }
 
+
+# Check if FSLogix is already installed
+$installedVersion = Get-InstalledFSLogixVersion
+if ($installedVersion) {
+    Write-Output "FSLogix is installed. Installed version: $installedVersion"
+    if ($onlineVersion -gt $installedVersion) {
+        Write-Output "Online version of FSLogix is newer than the installed version. Downloading FSLogix Installer..."
+        Invoke-FSLogixDownload -WorkingDir $WorkingDir -LogPath $LogPath
+    } else {
+        Write-Output "FSLogix is already up to date. Skipping installation."
+        exit 0
+    }
+} else {
+    Write-Output "FSLogix is not installed. Downloading FSLogix Installer..."
+    Invoke-FSLogixDownload -WorkingDir $WorkingDir -LogPath $LogPath
+}
 
 
 Install-FSLogix -WorkingDir $WorkingDir -LogPath $LogPath
