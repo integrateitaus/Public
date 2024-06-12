@@ -183,10 +183,10 @@ if ($isTeamsClassicInstalled) {
     $TeamsIcon_old = Join-Path $ENV:SystemDrive "Users\*\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Microsoft Teams*.lnk"
     $TeamsShortcut_old = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Microsoft Teams.lnk"
     $TeamsShortcut_PublicDesktop = "C:\Users\Public\Desktop\Microsoft Teams.lnk"
-    Get-Item -Path $TeamsShortcut_PublicDesktop -ErrorAction SilentlyContinue | Remove-Item -Force
-    Get-Item -Path $TeamsShortcut_old -ErrorAction SilentlyContinue | Remove-Item -Force
-    Get-Item -Path $TeamsFolder_old -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse
-    Get-Item -Path $TeamsIcon_old -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse
+    Get-Item -Path $TeamsShortcut_PublicDesktop -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
+    Get-Item -Path $TeamsShortcut_old -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
+    Get-Item -Path $TeamsFolder_old -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
+    Get-Item -Path $TeamsIcon_old -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
 
 } else {
     Write-Output "Teams Classic is not installed"
