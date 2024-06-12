@@ -16,8 +16,8 @@
 #>
 
 $onlineVersion = "2.9.8884.27471"
-$WorkingDir = "C:\Support"
-$LogPath = "C:\Support\FSLogixUpdate-Version-$onlineVersion.log"
+$WorkingDir = "C:\temp"
+$LogPath = "C:\temp\FSLogixUpdate-Version-$onlineVersion.log"
 
 
 function Install-FSLogix {
