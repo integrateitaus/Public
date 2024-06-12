@@ -20,10 +20,7 @@ $LogPath = Join-Path $WorkingDir "$env:computername-FSLogixInstall.log"
 $onlineVersion = "2.9.8884.27471"
 
 function Install-FSLogix {
-    param (
-        [string]$WorkingDir,
-        [string]$LogPath
-    )
+
 
     # Check if FSLogix is already installed
     $installedVersion = Get-InstalledFSLogixVersion
@@ -43,9 +40,7 @@ function Install-FSLogix {
 }
 
 function Get-InstalledFSLogixVersion {
-    param (
-        [string]$LogPath
-    )
+
 
     try {
         $installedVersion = $null
@@ -64,10 +59,6 @@ function Get-InstalledFSLogixVersion {
 }
 
 function Invoke-FSLogixDownload {
-    param (
-        [string]$WorkingDir,
-        [string]$LogPath
-    )
 
     try { 
         Write-Output "Downloading FSLogix Installer"
