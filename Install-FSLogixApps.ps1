@@ -52,14 +52,16 @@ switch ($fslogixsearch.count) {
 
 }
 
-# Find current FSLogix version from short URL:
+<# # Find current FSLogix version from short URL:
 $WebRequest = [System.Net.WebRequest]::create($FSLogixURL)
 $WebResponse = $WebRequest.GetResponse()
 $ActualDownloadURL = $WebResponse.ResponseUri.AbsoluteUri
 $WebResponse.Close()
 
 $FSLogixCurrentVersion = [System.Version]((Split-Path $ActualDownloadURL -leaf).Split("_")[2]).Replace(".zip","")
-
+#>
+$FSLogixCurrentVersion = "2.9.8884.27471"
+$FSLogixCurrentVersion
 Write-Host "Current FSLogix version: $FSLogixCurrentVersion"
 
 # See if the current version is newer than the installed version:
@@ -78,7 +80,15 @@ if ($downloadAndInstall)
     Write-Host "Downloading from: $FSLogixURL"
     Write-Host "Saving file to: $Zip"
 
-    Start-BitsTransfer -Source $FSLogixURL -Destination "$env:temp\$FSLogixDownload" -RetryInterval 60
+
+    try { 
+        Write-Output "Downloading FSLogix Installer"
+        
+        Start-BitsTransfer -Source $FSLogixURL -Destination "$env:temp\$FSLogixDownload" -ErrorAction Stop
+    } catch {
+        $errorMessage = "Error Downloading FSLogix: $_"
+        Write-Output $errorMessage
+    } 
 
     # Extract file from zip: x64\Release\FSLogixAppsSetup.exe to $env:temp\FSLogixAppsSetup.exe
     
