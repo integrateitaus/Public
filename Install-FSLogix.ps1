@@ -14,96 +14,39 @@
 .EXAMPLE
     Install-FSLogix -WorkingDir "C:\Support" -LogPath "C:\Support\FSLogixInstall.log"
 #>
-$onlineVersion = "2.9.8884.27471"
 
-
+$onlineVersion = "2.9.8884.27499"
 $WorkingDir = "C:\Support"
-if (-not $WorkingDir) {
-    Write-Error "WorkingDir is not set."
-    return
-}
-
-if (-not $env:computername) {
-    Write-Error "Computer name is not set."
-    return
-}
-
 $LogPath = "C:\Support\FSLogixUpdate-Version-$onlineVersion.log"
 
 
+# Check if FSLogix is already installed
+$installedVersion = Get-InstalledFSLogixVersion
+if ($installedVersion) {
+    Write-Output "FSLogix is installed. Installed version: $installedVersion"
+    if ($onlineVersion -gt $installedVersion) {
+        Write-Output "Online version of FSLogix is newer than the installed version. Downloading FSLogix Installer..."
+        Invoke-FSLogixDownload -WorkingDir $WorkingDir -LogPath $LogPath
+    } else {
+        Write-Output "FSLogix is already up to date. Skipping installation."
+        return
+    }
+} else {
+    Write-Output "FSLogix is not installed. Downloading FSLogix Installer..."
+    Invoke-FSLogixDownload -WorkingDir $WorkingDir -LogPath $LogPath
+}
 
 function Install-FSLogix {
 
 
-    # Check if FSLogix is already installed
-    $installedVersion = Get-InstalledFSLogixVersion
-    if ($installedVersion) {
-        Write-Output "FSLogix is installed. Installed version: $installedVersion"
-        if ($onlineVersion -gt $installedVersion) {
-            Write-Output "Online version of FSLogix is newer than the installed version. Downloading FSLogix Installer..."
-            Invoke-FSLogixDownload
-        } else {
-            Write-Output "FSLogix is already up to date. Skipping installation."
-            return
-        }
-    } else {
-        Write-Output "FSLogix is not installed. Downloading FSLogix Installer..."
-        Invoke-FSLogixDownload
-    }
-}
-
-function Get-InstalledFSLogixVersion {
-
-
-    try {
-        $installedVersion = $null
-        $fslogixRegistryPath = "HKLM:\SOFTWARE\FSLogix\Apps"
-        if (Test-Path -Path $fslogixRegistryPath) {
-            $installedVersion = Get-ItemProperty -Path $fslogixRegistryPath
-            $installedVersion = $installedVersion.Version
-        }
-        return $installedVersion
-    } catch {
-        $errorMessage = "Error getting installed FSLogix version: $_"
-        Write-Output $errorMessage
-        Add-Content -Path $LogPath -Value $errorMessage
-        return $null
-    }
-}
-
-function Invoke-FSLogixDownload {
-
-    try { 
-        Write-Output "Downloading FSLogix Installer"
-        Start-BitsTransfer -Source "https://aka.ms/fslogix_download" -Destination (Join-Path $WorkingDir "FSLogix.zip") -ErrorAction Stop
-    } catch {
-        $errorMessage = "Error Downloading FSLogix: $_"
-        Write-Output $errorMessage
-        Add-Content -Path $LogPath -Value $errorMessage
-        return
-    } 
-
-    # Extract FSLogix
-    try { 
-        # Create FSLogix extracted folder if it doesn't exist
-        if (-not (Test-Path -Path (Join-Path $WorkingDir "FSLogix_Apps"))) {
-            New-Item -ItemType Directory -Path (Join-Path $WorkingDir "FSLogix_Apps") | Out-Null
-        }
-        Write-Output "Extracting FSLogix"
-        Expand-Archive -Path (Join-Path $WorkingDir "FSLogix.zip") -DestinationPath (Join-Path $WorkingDir "FSLogix_Apps") -Force
-    } catch {
-        $errorMessage = "Error Extracting FSLogix: $_"
-        Write-Output $errorMessage
-        Add-Content -Path $LogPath -Value $errorMessage
-        return
-    } 
-
-    # Install FSLogix
     try { 
         Write-Output "Installing FSLogix"
-        Start-Process (Join-Path $WorkingDir "FSLogix_Apps\x64\Release\FSLogixAppsSetup.exe") -ArgumentList "/install", "/quiet", "/norestart", "/log", (Join-Path $WorkingDir "fslogix.txt")
-        #$fslogixLogContent = Get-Content -Path (Join-Path $WorkingDir "fslogix.txt")
-        #Add-Content -Path $LogPath -Value $fslogixLogContent
+        $fslogixInstallerPath = Join-Path $WorkingDir "FSLogix_Apps\x64\Release\FSLogixAppsSetup.exe"
+        Start-Process $fslogixInstallerPath -ArgumentList "/install", "/quiet", "/norestart", "/log", (Join-Path $WorkingDir "fslogix.txt") -Wait
+
+        $fslogixLogContent = Get-Content -Path (Join-Path $WorkingDir "fslogix.txt")
+        Add-Content -Path $LogPath -Value $fslogixLogContent
+
         Write-Output "FSLogix installed successfully"
         Add-Content -Path $LogPath -Value "FSLogix installed successfully"
     } catch {
@@ -113,4 +56,49 @@ function Invoke-FSLogixDownload {
     }
 }
 
-Install-FSLogix 
+function Get-InstalledFSLogixVersion {
+    try {
+        $fslogixRegistryPath = "HKLM:\SOFTWARE\FSLogix\Apps"
+        if (Test-Path -Path $fslogixRegistryPath) {
+            $installedVersion = (Get-ItemProperty -Path "HKLM:\SOFTWARE\FSLogix\Apps").InstallVersion   
+            $installedVersion
+        }
+
+    } catch {
+        $errorMessage = "Error getting installed FSLogix version: $_"
+        Write-Output $errorMessage
+        Add-Content -Path $LogPath -Value $errorMessage
+
+    }
+}
+function Invoke-FSLogixDownload {
+
+    try { 
+        Write-Output "Downloading FSLogix Installer"
+        $fslogixInstallerUrl = "https://aka.ms/fslogix_download"
+        Start-BitsTransfer -Source $fslogixInstallerUrl -Destination (Join-Path $WorkingDir "FSLogix.zip") -ErrorAction Stop
+    } catch {
+        $errorMessage = "Error Downloading FSLogix: $_"
+        Write-Output $errorMessage
+        Add-Content -Path $LogPath -Value $errorMessage
+        return
+    } 
+
+    try { 
+        # Create FSLogix extracted folder if it doesn't exist
+        $fslogixExtractedFolderPath = Join-Path $WorkingDir "FSLogix_Apps"
+        if (-not (Test-Path -Path $fslogixExtractedFolderPath)) {
+            New-Item -ItemType Directory -Path $fslogixExtractedFolderPath | Out-Null
+        }
+        Write-Output "Extracting FSLogix"
+        Expand-Archive -Path (Join-Path $WorkingDir "FSLogix.zip") -DestinationPath $fslogixExtractedFolderPath -Force
+    } catch {
+        $errorMessage = "Error Extracting FSLogix: $_"
+        Write-Output $errorMessage
+        Add-Content -Path $LogPath -Value $errorMessage
+        return
+    } 
+}
+
+
+Install-FSLogix -WorkingDir $WorkingDir -LogPath $LogPath
