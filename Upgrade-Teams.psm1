@@ -186,7 +186,7 @@ if ($isTeamsClassicInstalled) {
     Get-Item -Path $TeamsShortcut_PublicDesktop -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
     Get-Item -Path $TeamsShortcut_old -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
     Get-Item -Path $TeamsFolder_old -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
-    Get-Item -Path $TeamsIcon_old -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
+    Get-Item -Path $TeamsIcon_old -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse 
 
 } else {
     Write-Output "Teams Classic is not installed"
