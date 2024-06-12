@@ -14,6 +14,8 @@
 .EXAMPLE
     Install-FSLogix -WorkingDir "C:\Support" -LogPath "C:\Support\FSLogixInstall.log"
 #>
+$onlineVersion = "2.9.8884.27471"
+
 
 $WorkingDir = "C:\Support"
 if (-not $WorkingDir) {
@@ -26,13 +28,13 @@ if (-not $env:computername) {
     return
 }
 
-$LogPath = Join-Path $WorkingDir "$env:computername-FSLogixInstall.log"
+$LogPath = Join-Path $WorkingDir "FSLogixUpdate-Version-$onlineVersion.log"
 if (-not $LogPath) {
     Write-Error "LogPath is not set."
     return
 }
 
-$onlineVersion = "2.9.8884.27471"
+
 
 function Install-FSLogix {
 
