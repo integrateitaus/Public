@@ -19,7 +19,7 @@
 Set-Location "C:\Temp"
 
 $isTeamsClassicInstalled = Test-Path C:\Users\*\AppData\Local\Microsoft\Teams\current\Teams.exe
-$isTeamsNewInstalled = Get-ChildItem "C:\Program Files\WindowsApps" -Filter "MSTeams_*"
+#$isTeamsNewInstalled = Get-ChildItem "C:\Program Files\WindowsApps" -Filter "MSTeams_241*"
 
 $sourceUrl = "https://statics.teams.cdn.office.net/production-windows-x64/enterprise/webview2/lkg/MSTeams-x64.msix"
 $msixPath = "C:\Temp\MSTeams-x64.msix"
@@ -107,17 +107,19 @@ function Install-MSTeams {
     }
 }
 
-if ($isTeamsNewInstalled) {
+
+<#if ($isTeamsNewInstalled) {
     Write-Output "Modern Teams is already installed"
     
 } else {
     Write-Output "Modern Teams is not installed"
-    try {
+ #>   try {
         Install-MSTeams
+        Write-Output "Modern Teams has been installed successfully."
     } catch {
         Write-Output "Failed to install Modern Teams"
     }
-}
+#}
 
 # Check if Teams Classic is installed
 if ($isTeamsClassicInstalled) {
