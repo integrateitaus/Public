@@ -72,7 +72,7 @@ $WorkingDir = "C:\Support\"
 
 ##############
 # Install Zoom 64-bit for all users
-$Zoom_url = "https://zoom.us/client/5.16.6.24712/ZoomInstallerFull.msi?archType=x64"
+$Zoom_url = "https://zoom.us/client/6.2.6.49050/ZoomInstallerFull.exe?archType=x64"
 $zoom_msi = "$WorkingDir\ZoomInstallerFull.msi"
 
 function Install-Zoom {
