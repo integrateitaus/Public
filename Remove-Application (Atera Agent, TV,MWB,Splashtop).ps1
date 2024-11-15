@@ -137,7 +137,7 @@ function Uninstall-Altera {
 
 # This script will uninstall TeamViewer from a Windows machine.
 
- 
+ <#
 function Uninstall-TeamViewer {
     # Find all apps installed on this machine.
     $TeamViewer = Get-ItemProperty "HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*" | Where-Object {$_.DisplayName -like "TeamViewer*"}
@@ -148,7 +148,7 @@ function Uninstall-TeamViewer {
 }
 
 
-
+#>
 
 function Uninstall-Malwarebytes {
     & "C:\Program Files\Malwarebytes Anti-Malware\unins000.exe" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART 
@@ -157,5 +157,5 @@ function Uninstall-Malwarebytes {
 
 
 Uninstall-Altera
-Uninstall-TeamViewer
+#Uninstall-TeamViewer
 Uninstall-Malwarebytes
