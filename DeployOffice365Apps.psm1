@@ -31,7 +31,7 @@ $LogPath = "$WorkingDir\$env:computername-365AppInstall.log"
 
 function InstallOfficeODT {
 
-    $odt_url = "https://www.microsoft.com/en-us/download/details.aspx?id=49117"
+    $odt_url = "https://download.microsoft.com/download/2/7/A/27AF1BE6-DD20-4CB4-B154-EBAB8A7D4A7E/officedeploymenttool_18129-20158.exe"
     $page = Invoke-WebRequest -Uri $odt_url -UseBasicParsing
     $latest_version_url = $page.Links | Where-Object { $_.href -like "*officedeploymenttool*.exe" } | Select-Object -ExpandProperty href -First 1
 
