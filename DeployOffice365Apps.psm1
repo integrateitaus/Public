@@ -64,7 +64,7 @@ function CreateOfficeConfigxml {
 # Create an XML configuration file for the Office 365 installation
 @"
 <Configuration>
-    <Add OfficeClientEdition="64" Channel="Current" MigrateArch="TRUE">
+    <Add OfficeClientEdition="32" Channel="Current" MigrateArch="FALSE">
         <Product ID="O365ProPlusRetail">
             <Language ID="MatchOS" />
             <ExcludeApp ID="Groove" />
